@@ -4,7 +4,9 @@ import Image from "next/image";
 import challenger from "../../../public/ranked-emblem/emblem-challenger.png";
 import wallpaperYasuo from "../../../public/night-yasuo.jpg";
 import { Container, HeroSection, SearchSection, StatsZone } from "./styles";
-interface PlayerStatsProps {}
+interface PlayerStatsProps {
+  playerName: string;
+}
 
 type ChampionStats = {
   championId: number;

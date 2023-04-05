@@ -5,7 +5,7 @@ import Document, {
   Main,
   NextScript,
 } from "next/document";
-import Script from "next/script";
+
 import { ServerStyleSheet } from "styled-components";
 
 export default class MyDocument extends Document {
@@ -39,31 +39,10 @@ export default class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <Script
-            strategy="beforeInteractive"
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-0T9BHVMG9L"
-          />
-
-          <Script
-            strategy="beforeInteractive"
-            id="google-analytics"
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-
-                gtag('config', 'G-0T9BHVMG9L');
-              `,
-            }}
-          />
-
           <meta
             name="description"
             content="I'm EduExtreme, I'm Front-end developer."
           />
-
           <meta property="og:type" content="website" />
           <meta property="og:title" content="EduExtreme - Front-end Design" />
           <meta />
