@@ -1,16 +1,15 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-max-width: var(--max-width-desktop);
+max-width: var(--max-width-super-desktop);
+margin: 5rem auto;
 display:flex;
 flex-direction:column;
-justify-content:center;
-margin: 5rem auto;
-height:100%;
+height:30vh;
+background-color: var(--background);
 `;
 
 export const HeroSection = styled.section`
-max-width: var(--max-width-desktop);
 margin-bottom: 2rem;
 
 
@@ -22,7 +21,6 @@ img {
 `;
 
 export const SearchSection = styled.section`
-
 display:flex;
 align-items: center;
 justify-content:center;
@@ -64,9 +62,28 @@ input {
 }
 `;
 
+export const Spinner = styled.div`
+  margin-right:1rem;
+  border: 5px solid #f3f3f3; 
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.5s linear infinite; 
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 export const StatsZone = styled.div`
 color: white;
-
 h2 {
   margin-top:3rem;
   color:#002B5B;
@@ -100,7 +117,24 @@ li {
     margin-top: 0.5rem;
   }
 }
+`;
 
+export const RankedStats = styled.div`
+display: flex;
+margin-top: 3rem;
+gap:2rem;
+.ranked-details {
+  background-color: #002B5B;
+  display: flex;
+  flex-direction:column;
+  border-radius: 1rem;
+  width: 200px;
+  height: 200px;
+  padding: 2rem 2rem;
+  color: white;
+ 
+
+}
 
 
 

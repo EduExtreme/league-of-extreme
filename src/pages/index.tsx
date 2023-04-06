@@ -1,9 +1,9 @@
-import PlayerStatistc from "../components/PlayerStats";
+import PlayerStatus from "../components/PlayerStats";
 
 export default function Home() {
   return (
-    <div>
-      <PlayerStatistc playerName="examplePlayerName" />
-    </div>
+    <>
+      <PlayerStatus playerName="name" />
+    </>
   );
 }
