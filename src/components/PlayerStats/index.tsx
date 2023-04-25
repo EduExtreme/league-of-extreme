@@ -48,14 +48,14 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
     setLoading(true);
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
     const responseSummonerData = await axios.get(
-      `https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${playerName}?api_key=${apiKey}`
+      `https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${playerName}?api_key=RGAPI-2e628ad5-6d2d-40d3-bfcd-2fc53c8b15db`
     );
 
     const summonerId = responseSummonerData.data.id;
     const summonerPuuid = responseSummonerData.data.puuid;
 
     const statsResponse = await axios.get(
-      `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=${apiKey}`
+      `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=RGAPI-2e628ad5-6d2d-40d3-bfcd-2fc53c8b15db`
     );
 
     const championAllDataResponse = await axios.get(
@@ -67,16 +67,16 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
     );
 
     const responseWinRateRanked = await axios.get(
-      `https://br1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${apiKey}`
+      `https://br1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=RGAPI-2e628ad5-6d2d-40d3-bfcd-2fc53c8b15db`
     );
 
     const matchHistoryResponse = await axios.get(
-      `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`
+      `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=30&api_key=RGAPI-2e628ad5-6d2d-40d3-bfcd-2fc53c8b15db`
     );
 
     const matchDetailsPromises = matchHistoryId.map(async (match) => {
       const matchDetailsResponse = await axios.get(
-        `https://americas.api.riotgames.com/lol/match/v5/matches/${match}?api_key=${apiKey}`
+        `https://americas.api.riotgames.com/lol/match/v5/matches/${match}?api_key=RGAPI-2e628ad5-6d2d-40d3-bfcd-2fc53c8b15db`
       );
       return matchDetailsResponse.data;
     });
@@ -123,7 +123,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
             </p>
             <p>PDL {ranked.leaguePoints}</p>
             <p>WINS {ranked.wins}</p>
-            <p>LOSSES{ranked.losses}</p>
+            <p>LOSSES {ranked.losses}</p>
           </div>
         ))}
       </RankedStats>
@@ -142,6 +142,14 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
               <li key={champion.championId}>
                 <strong>
                   {champInfo ? champInfo.name : "Campeão não encontrado"}
+                  {champInfo.name === "Yasuo" ||
+                  champInfo.name === "Riven" ||
+                  champInfo.name === "Thresh" ||
+                  champInfo.name === "Karthus" ||
+                  champInfo.name === "Teemo" ||
+                  champInfo.name === "Poppy"
+                    ? ", entao Você é macaco  "
+                    : " Você é gente normal"}
                 </strong>
 
                 {/* <Image src={challenger} alt="Icone" /> */}
