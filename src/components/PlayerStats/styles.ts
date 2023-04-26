@@ -128,3 +128,13 @@ export const RankedStats = styled.div`
     color: white;
   }
 `;
+
+export const WinRateZones = styled.div`
+  color: black;
+  h2 {
+    margin-top: 3rem;
+    color: #002b5b;
+  }
+ 
+`;
+
