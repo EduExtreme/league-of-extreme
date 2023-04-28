@@ -29,7 +29,7 @@ type ChampionSelectedAllData = {
   key: string;
 };
 interface playerDetailsFromMatchDataProps {
-  playerDetailsFromMatchData: [];
+  playerDetailsFromMatchData: [{}];
 }
 
 export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
@@ -76,7 +76,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
     );
 
     const historicMatch = await americasRiotApi.get(
-      `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=30&api_key=${apiKey}`
+      `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`
     );
 
     const allMatchGames = historicMatch.data.map(async (match) => {
@@ -105,7 +105,19 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
         playerDetailsFromMatchData.push(item);
       });
     });
-    console.log("playerDetailsFromMatchData", playerDetailsFromMatchData);
+
+    const filteredMatches = playerStats.filter((match) => {
+      return (
+        match.summonerName === "Edu Extreme" && match.championName === "Yasuo"
+      );
+    });
+
+    const matchsWithChampion = filteredMatches.reduce((total, match) => {
+      return match.championName === "Zed" ? total + 1 : total;
+    }, 0);
+
+    console.log("Número de partidas jogadas com Zed:", zedMatches);
+    console.log("filteredMatches", filteredMatches);
 
     setPlayerStats(playerDetailsFromMatchData);
     // setChampions(statsResponse.data);
@@ -177,16 +189,13 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
         {playerStats.map((detail) => (
           <Fragment key={detail.id}>
             <p>
-              {detail.summonerName === "Edu Extreme" && (
-                <>
-                  <span>{detail.championName}</span>
-                  <span>
-                    {detail.championName === "Zed"
-                      ? ` ${detail.win}`
-                      : " nao jogou de zed "}
-                  </span>
-                </>
-              )}
+              {detail.summonerName === `${playerName}` &&
+                detail.championName === "Zed" &&
+                detail.win && (
+                  <>
+                    <p>{detail.win === false ? "perdeu" : "ganhou "}</p>
+                  </>
+                )}
             </p>
           </Fragment>
         ))}
