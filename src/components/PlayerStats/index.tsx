@@ -34,12 +34,14 @@ interface playerDetailsFromMatchDataProps {
 
 export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
   const [champions, setChampions] = useState<ChampionStats[]>([]);
-  const [playerName, setPlayerName] = useState("EduExtreme");
+  const [playerName, setPlayerName] = useState("");
   const [allChamps, setAllChamps] = useState<ChampionSelectedAllData[]>([]);
   const [loading, setLoading] = useState(false);
   const [rankedStats, setRankedStats] = useState([]);
   const [matchDetailsById, setMatchDetailsById] = useState();
   const [playerStats, setPlayerStats] = useState([]);
+
+  console.log("TESTETESTE", playerName);
 
   const playerDetailsFromMatchData = [];
 
@@ -59,17 +61,17 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
     const summonerId = responseSummonerData.data.id;
     const summonerPuuid = responseSummonerData.data.puuid;
 
-    // const statsResponse = await axios.get(
-    //   `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=${apiKey}`
-    // );
+    const statsResponse = await axios.get(
+      `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=${apiKey}`
+    );
 
-    // const championAllDataResponse = await axios.get(
-    //   `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`
-    // );
+    const championAllDataResponse = await axios.get(
+      `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`
+    );
 
-    // const championSelectedAllData: ChampionSelectedAllData[] = Object.values(
-    //   championAllDataResponse.data.data
-    // );
+    const championSelectedAllData: ChampionSelectedAllData[] = Object.values(
+      championAllDataResponse.data.data
+    );
 
     const responseRankedQeue = await riotApi.get(
       `/league/v4/entries/by-summoner/${summonerId}?api_key=${apiKey}`
@@ -79,7 +81,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
       `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`
     );
 
-    const allMatchGames = historicMatch.data.map(async (match) => {
+    const allMatchGames = historicMatch.data.map(async (match: any) => {
       const Matchs = await americasRiotApi.get(
         `lol/match/v5/matches/${match}?api_key=${apiKey}`
       );
@@ -89,7 +91,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
     const matchDetailsbyGame = await Promise.all(allMatchGames);
 
     const matchParamsDetails = matchDetailsbyGame.map((detail) => {
-      const PlayerStatsbyMatch = detail.info.participants.map((item) => {
+      const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
         return {
           id: uuidv4(),
           summonerName: item.summonerName,
@@ -101,27 +103,31 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
         };
       });
 
-      PlayerStatsbyMatch.forEach((item) => {
+      PlayerStatsbyMatch.forEach((item: any) => {
         playerDetailsFromMatchData.push(item);
       });
     });
 
     const filteredMatches = playerStats.filter((match) => {
       return (
-        match.summonerName === "Edu Extreme" && match.championName === "Yasuo"
+        match.summonerName === playerName && match.championName === "Riven"
       );
+
+      // return (
+      //   match.summonerName === playerName && match.championName === "Riven"
+      // );
     });
 
     const matchsWithChampion = filteredMatches.reduce((total, match) => {
-      return match.championName === "Zed" ? total + 1 : total;
+      return match.championName === "Riven" ? total + 1 : total;
     }, 0);
 
-    console.log("Número de partidas jogadas com Zed:", zedMatches);
     console.log("filteredMatches", filteredMatches);
+    console.log("quantas partidas ?", matchsWithChampion);
 
     setPlayerStats(playerDetailsFromMatchData);
-    // setChampions(statsResponse.data);
-    // setAllChamps(championSelectedAllData);
+    setChampions(statsResponse.data);
+    setAllChamps(championSelectedAllData);
     setRankedStats(responseRankedQeue.data);
     setMatchDetailsById(allMatchGames);
     setLoading(false);
@@ -162,10 +168,8 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
           </div>
         ))}
       </RankedStats>
-      {/* <StatsZone>
-        <h2>
-          Top 3 Mastery Champions of {playerName}: 
-        </h2>
+      <StatsZone>
+        <h2>Top 3 Mastery Champions of {playerName}:</h2>
         <ul>
           {champions.map((champion) => {
             const champInfo = allChamps.find(
@@ -184,7 +188,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
             );
           })}
         </ul>
-      </StatsZone> */}
+      </StatsZone>
       <WinRateZones>
         {playerStats.map((detail) => (
           <Fragment key={detail.id}>
