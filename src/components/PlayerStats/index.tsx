@@ -12,43 +12,31 @@ import {
   WinRateZones,
 } from "./styles";
 import { americasRiotApi, riotApi } from "@/services/api";
-interface PlayerStatsProps {
-  playerName: string;
-}
+import { usePlayerDetails } from "@/stores/usePlayerStore";
 
-type ChampionStats = {
-  championId: number;
-  championName: string;
-  championLevel: number;
-  championPoints: number;
-};
+export default function PlayerStatus(): JSX.Element {
+  const {
+    onChangePlayerName,
+    playerName,
+    onChangeChampions,
+    champions,
+    allChamps,
+    onChangeAllChampions,
+    rankedStats,
+    onChangeRankedStats,
+    playerStats,
+    onChangePlayerStats,
+    onChangeMatchDetailsById,
+    matchDetailsById,
+  } = usePlayerDetails((state) => state);
 
-type ChampionSelectedAllData = {
-  id: number;
-  name: string;
-  key: string;
-};
-interface playerDetailsFromMatchDataProps {
-  playerDetailsFromMatchData: [{}];
-}
-
-export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
-  const [champions, setChampions] = useState<ChampionStats[]>([]);
-  const [playerName, setPlayerName] = useState("");
-  const [allChamps, setAllChamps] = useState<ChampionSelectedAllData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [rankedStats, setRankedStats] = useState([]);
-  const [matchDetailsById, setMatchDetailsById] = useState();
-  const [playerStats, setPlayerStats] = useState([]);
-
-  console.log("TESTETESTE", playerName);
-
-  const playerDetailsFromMatchData = [];
+  const playerDetailsFromMatchData: any = [];
 
   const handlePlayerNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setPlayerName(event.target.value);
+    onChangePlayerName(event.target.value);
   };
 
   async function handleSearchClick() {
@@ -69,7 +57,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
       `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`
     );
 
-    const championSelectedAllData: ChampionSelectedAllData[] = Object.values(
+    const championSelectedAllData = Object.values(
       championAllDataResponse.data.data
     );
 
@@ -108,28 +96,27 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
       });
     });
 
-    const filteredMatches = playerStats.filter((match) => {
-      return (
-        match.summonerName === playerName && match.championName === "Riven"
-      );
+    // const filteredMatches = playerStats.filter((match) => {
+    //   return match.summonerName === playerName && match.championName === "Zed";
 
-      // return (
-      //   match.summonerName === playerName && match.championName === "Riven"
-      // );
-    });
+    //   // return (
+    //   //   match.summonerName === playerName && match.championName === "Riven"
+    //   // );
+    // });
 
-    const matchsWithChampion = filteredMatches.reduce((total, match) => {
-      return match.championName === "Riven" ? total + 1 : total;
-    }, 0);
+    // const matchsWithChampion = filteredMatches.reduce((total, match) => {
+    //   return match.championName === "Zed" ? total + 1 : total;
+    // }, 0);
 
-    console.log("filteredMatches", filteredMatches);
-    console.log("quantas partidas ?", matchsWithChampion);
+    // console.log("partidas com o campeão : ", matchsWithChampion);
+    console.log("partidas detalhes : ", rankedStats);
+    onChangePlayerName(playerName);
+    onChangePlayerStats(playerDetailsFromMatchData);
+    onChangeChampions(statsResponse.data);
+    onChangeAllChampions(championSelectedAllData);
+    onChangeRankedStats(responseRankedQeue.data);
+    onChangeMatchDetailsById(allMatchGames);
 
-    setPlayerStats(playerDetailsFromMatchData);
-    setChampions(statsResponse.data);
-    setAllChamps(championSelectedAllData);
-    setRankedStats(responseRankedQeue.data);
-    setMatchDetailsById(allMatchGames);
     setLoading(false);
   }
 
@@ -154,9 +141,9 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
           <div className="ranked-details" key={ranked.leagueId}>
             <span>
               {ranked.queueType === "RANKED_FLEX_SR" ? (
-                <p>Ranked Flex</p>
+                <strong>Ranked Flex</strong>
               ) : (
-                <p>Ranked Solo</p>
+                <strong>Ranked Solo</strong>
               )}
             </span>
             <p>
@@ -165,6 +152,12 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
             <p>PDL {ranked.leaguePoints}</p>
             <p>WINS {ranked.wins}</p>
             <p>LOSSES {ranked.losses}</p>
+
+            <strong>
+              Win Rate:{" "}
+              {((ranked.wins / (ranked.wins + ranked.losses)) * 100).toFixed(2)}
+              %
+            </strong>
           </div>
         ))}
       </RankedStats>
@@ -179,7 +172,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
             return (
               <li key={champion.championId}>
                 <strong>
-                  {champInfo ? champInfo.name : "Campeão não encontrado"}
+                  {champInfo ? champInfo.name : "Nome não disponivel"}
                 </strong>
 
                 <p>Maestria : {champion.championLevel}</p>
@@ -189,12 +182,13 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
           })}
         </ul>
       </StatsZone>
-      <WinRateZones>
+
+      {/* <WinRateZones>
         {playerStats.map((detail) => (
           <Fragment key={detail.id}>
             <p>
               {detail.summonerName === `${playerName}` &&
-                detail.championName === "Zed" &&
+                detail.championName === "Riven" &&
                 detail.win && (
                   <>
                     <p>{detail.win === false ? "perdeu" : "ganhou "}</p>
@@ -203,7 +197,7 @@ export default function PlayerStatus(props: PlayerStatsProps): JSX.Element {
             </p>
           </Fragment>
         ))}
-      </WinRateZones>
+      </WinRateZones> */}
     </Container>
   );
 }
