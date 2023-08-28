@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { create } from 'zustand'
+import { create } from 'zustand';
+
+type Tier = "IRON" | "BRONZE" | "SILVER" | "GOLD" | "PLATINUM" | "EMERALD" | "DIAMOND" | "MASTER" | "GRANDMASTER" | "CHALLENGER";
 
 type ChampionSelectedAllData = {
   id: string;
@@ -10,70 +11,63 @@ type ChampionSelectedAllData = {
 interface RankedStat {
   leagueId: string;
   queueType: string;
-  tier: string;
+  tier: Tier;
   rank: string;
   leaguePoints: number;
   wins: number;
   losses: number;
 }
 
-
-
 type PlayerDetails = {
-  playerName:string
-  onChangePlayerName: (name: string) => void
+  playerName: string;
+  onChangePlayerName: (name: string) => void;
  
- 
-  champions:any[],
-  onChangeChampions: (champ: []) => void
-
+  champions: any[];
+  onChangeChampions: (champ: any[]) => void;
 
   allChamps:ChampionSelectedAllData[],
   onChangeAllChampions: (all: any[]) => void
   
-  
-  rankedStats:RankedStat[],
-  onChangeRankedStats: (ranked:[]) => void
+  rankedStats: RankedStat[];
+  onChangeRankedStats: (ranked: RankedStat[]) => void;
 
-  playerStats: []
-  onChangePlayerStats: (stats: any) => void
+  playerStats: any;
+  onChangePlayerStats: (stats: any) => void;
 
-  matchDetailsById:"",
-  onChangeMatchDetailsById:(matchId: any) => void
+  matchDetailsById: string;
+  onChangeMatchDetailsById: (matchId: string) => void;
 
+  loading: boolean;
+  onChangeLoading: (load: boolean) => void;
+};
 
-
-}
-
-
-
-export const usePlayerDetails = create<PlayerDetails>((set, get) => ({
-
- playerName: "",
- onChangePlayerName: (name) => {
-  set({ playerName: name })
- },
- champions:[],
-onChangeChampions: (champ) => {
-  set({ champions:champ })
-},
-  allChamps:[],
-onChangeAllChampions: (all) => {
-  set({ allChamps: all })
-},
-  rankedStats:[],
-onChangeRankedStats: (ranked) =>{
-  set({ rankedStats:ranked })
-}, 
-playerStats:[],
-onChangePlayerStats: (stats) => {
-  set({ playerStats: stats })
-},
-matchDetailsById:"",
-onChangeMatchDetailsById: (matchId) => {
-  set({ matchDetailsById: matchId })
-},
-
-}))
-
-
+export const usePlayerDetails = create<PlayerDetails>((set) => ({
+  playerName: "",
+  onChangePlayerName: (name) => {
+    set({ playerName: name });
+  },
+  champions: [],
+  onChangeChampions: (champ) => {
+    set({ champions: champ });
+  },
+  allChamps: [],
+  onChangeAllChampions: (all) => {
+    set({ allChamps: all });
+  },
+  rankedStats: [],
+  onChangeRankedStats: (ranked) => {
+    set({ rankedStats: ranked });
+  }, 
+  playerStats: {},
+  onChangePlayerStats: (stats) => {
+    set({ playerStats: stats });
+  },
+  matchDetailsById: "",
+  onChangeMatchDetailsById: (matchId) => {
+    set({ matchDetailsById: matchId });
+  },
+  loading: false,
+  onChangeLoading: (load) => {
+    set({ loading: load });
+  }
+}));

@@ -1,36 +1,49 @@
-import { useState, useEffect, Fragment } from "react";
+/* eslint-disable react/no-unescaped-entities */
+import { useState } from "react";
 import axios from "axios";
 
 import { v4 as uuidv4 } from "uuid";
-import {
-  Container,
-  HeroSection,
-  RankedStats,
-  SearchSection,
-  Spinner,
-  StatsZone,
-  WinRateZones,
-} from "./styles";
+
 import { americasRiotApi, riotApi } from "@/services/api";
 import { usePlayerDetails } from "@/stores/usePlayerStore";
+import { Spinner } from "../Spinner";
+import iron from "../../../public/ranked-emblem/iron.webp"
+import bronze from "../../../public/ranked-emblem/bronze.webp"
+import silver from "../../../public/ranked-emblem/silver.webp"
+import gold from "../../../public/ranked-emblem/gold.webp"
+import platinum from "../../../public/ranked-emblem/platinum.webp"
+import emerald from "../../../public/ranked-emblem/emerald.webp"
+import diamond from "../../../public/ranked-emblem/diamond.webp"
+import master from "../../../public/ranked-emblem/master.webp"
+import grandmaster from "../../../public/ranked-emblem/grandmaster.webp"
+import challenger from "../../../public/ranked-emblem/challenger.webp"
+import Image, { StaticImageData } from "next/image";
+
 
 export default function PlayerStatus(): JSX.Element {
   const {
     onChangePlayerName,
     playerName,
-    onChangeChampions,
     champions,
     allChamps,
-    onChangeAllChampions,
     rankedStats,
-    onChangeRankedStats,
-    playerStats,
-    onChangePlayerStats,
-    onChangeMatchDetailsById,
-    matchDetailsById,
+    loading,
+   
   } = usePlayerDetails((state) => state);
 
-  const [loading, setLoading] = useState(false);
+  const tierEmblemMapping = {
+    IRON: iron,
+    BRONZE: bronze,
+    SILVER: silver,
+    GOLD: gold,
+    PLATINUM: platinum,
+    EMERALD:emerald,
+    DIAMOND:diamond,
+    MASTER:master,
+    GRANDMASTER:grandmaster,
+    CHALLENGER:challenger
+  };
+
   const playerDetailsFromMatchData: any = [];
 
   const handlePlayerNameChange = (
@@ -39,149 +52,77 @@ export default function PlayerStatus(): JSX.Element {
     onChangePlayerName(event.target.value);
   };
 
-  async function handleSearchClick() {
-    setLoading(true);
-    const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-    const responseSummonerData = await riotApi.get(
-      `/summoner/v4/summoners/by-name/${playerName}?api_key=${apiKey}`
-    );
+ 
 
-    const summonerId = responseSummonerData.data.id;
-    const summonerPuuid = responseSummonerData.data.puuid;
 
-    const statsResponse = await axios.get(
-      `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=${apiKey}`
-    );
-
-    const championAllDataResponse = await axios.get(
-      `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`
-    );
-
-    const championSelectedAllData = Object.values(
-      championAllDataResponse.data.data
-    );
-
-    const responseRankedQeue = await riotApi.get(
-      `/league/v4/entries/by-summoner/${summonerId}?api_key=${apiKey}`
-    );
-
-    const historicMatch = await americasRiotApi.get(
-      `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`
-    );
-
-    const allMatchGames = historicMatch.data.map(async (match: any) => {
-      const Matchs = await americasRiotApi.get(
-        `lol/match/v5/matches/${match}?api_key=${apiKey}`
-      );
-
-      return Matchs.data;
-    });
-    const matchDetailsbyGame = await Promise.all(allMatchGames);
-
-    const matchParamsDetails = matchDetailsbyGame.map((detail) => {
-      const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
-        return {
-          id: uuidv4(),
-          summonerName: item.summonerName,
-          championId: item.championId,
-          championName: item.championName,
-          kills: item.kills,
-          death: item.deaths,
-          win: item.win,
-        };
-      });
-
-      PlayerStatsbyMatch.forEach((item: any) => {
-        playerDetailsFromMatchData.push(item);
-      });
-    });
-
-    // const filteredMatches = playerStats.filter((match) => {
-    //   return match.summonerName === playerName && match.championName === "Zed";
-
-    //   // return (
-    //   //   match.summonerName === playerName && match.championName === "Riven"
-    //   // );
-    // });
-
-    // const matchsWithChampion = filteredMatches.reduce((total, match) => {
-    //   return match.championName === "Zed" ? total + 1 : total;
-    // }, 0);
-
-    // console.log("partidas com o campeão : ", matchsWithChampion);
-    console.log("partidas detalhes : ", rankedStats);
-    onChangePlayerName(playerName);
-    onChangePlayerStats(playerDetailsFromMatchData);
-    onChangeChampions(statsResponse.data);
-    onChangeAllChampions(championSelectedAllData);
-    onChangeRankedStats(responseRankedQeue.data);
-    onChangeMatchDetailsById(allMatchGames);
-
-    setLoading(false);
-  }
+  const relevantRankedStats = rankedStats.filter(
+    (ranked) =>
+      ranked.queueType === "RANKED_FLEX_SR" ||
+      ranked.queueType === "RANKED_SOLO_5x5"
+  );
 
   return (
-    <Container>
-      <HeroSection></HeroSection>
-      <SearchSection>
-        <span>Search your Profile</span>
-        <input
-          type="text"
-          value={playerName}
-          onChange={handlePlayerNameChange}
-          placeholder="Search your profile... example: EduExtreme"
-        />
-        <button className="button-styled" onClick={handleSearchClick}>
-          <p>Search</p>
-        </button>
-      </SearchSection>
-      <RankedStats>
-        {loading && <Spinner />}
-        {rankedStats.map((ranked) => (
-          <div className="ranked-details" key={ranked.leagueId}>
-            <span>
-              {ranked.queueType === "RANKED_FLEX_SR" ? (
-                <strong>Ranked Flex</strong>
-              ) : (
-                <strong>Ranked Solo</strong>
-              )}
-            </span>
-            <p>
-              {ranked.tier} {ranked.rank}
-            </p>
-            <p>PDL {ranked.leaguePoints}</p>
-            <p>WINS {ranked.wins}</p>
-            <p>LOSSES {ranked.losses}</p>
-
-            <strong>
-              Win Rate:{" "}
-              {((ranked.wins / (ranked.wins + ranked.losses)) * 100).toFixed(2)}
-              %
-            </strong>
-          </div>
-        ))}
-      </RankedStats>
-      <StatsZone>
-        <h2>Top 3 Mastery Champions of {playerName}:</h2>
-        <ul>
-          {champions.map((champion) => {
-            const champInfo = allChamps.find(
-              (item) => Number(item.key) === champion.championId
-            );
-            const pointsFormatted = champion.championPoints.toLocaleString();
-            return (
-              <li key={champion.championId}>
-                <strong>
-                  {champInfo ? champInfo.name : "Nome não disponivel"}
+    <main className="flex px-12 py-8 gap-8">
+      {loading === true ? <Spinner/> : (
+ <>
+    <div className="flex gap-8">
+      {relevantRankedStats.map((ranked) => (
+        <div className="border border-blue-500 border-solid p-4" key={ranked.leagueId}>
+              <span>
+                {ranked.queueType === "RANKED_FLEX_SR" ? (
+                  <strong className="text-blue-700">Ranked Flex</strong>
+                ) : (
+                  <strong className="text-blue-700">Ranked Solo</strong>
+                )}
+              </span>
+              <Image src={tierEmblemMapping[ranked.tier]} alt={`${ranked.tier} Emblem`} />
+              <ul className="font-semibold text-gray-500">
+              <li className="text-blue-700 font-bold"> {ranked.tier} <span>{ranked.rank}</span></li>
+              <li> PDL - {ranked.leaguePoints}</li>
+              <li> WINS - {ranked.wins}</li>
+              <li> LOSSES - {ranked.losses}</li>
+              </ul>
+              
+              <strong className={((ranked.wins / (ranked.wins + ranked.losses)) * 100) > 51 ? 'text-green-500' : 'text-red-500'}>
+                  Win Rate:{" "}
+                  {((ranked.wins / (ranked.wins + ranked.losses)) * 100).toFixed(2)}
+                  %
                 </strong>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-1 justify-center">
+          <h1 className="text-blue-700 font-bold text-2xl">{playerName}{" "}History's</h1></div>
 
-                <p>Maestria : {champion.championLevel}</p>
-                <p>Pts : {pointsFormatted}</p>
-              </li>
-            );
-          })}
-        </ul>
-      </StatsZone>
+
+
+
+
+        {/* <div className="flex flex-col flex-1">
+            <h1 className="font-bold">Top 3 Mastery Champions of {playerName}:</h1>
+            <ul>
+              {champions.map((champion) => {
+                const champInfo = allChamps.find(
+                  (item) => Number(item.key) === champion.championId
+                );
+                const pointsFormatted = champion.championPoints.toLocaleString();
+                return (
+                  <li key={champion.championId}>
+                    <strong>
+                      {champInfo ? champInfo.name : "Nome não disponivel"}
+                    </strong>
+
+                    <p>Maestria : {champion.championLevel}</p>
+                    <p>Pts : {pointsFormatted}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div> */}
+       </>
+) }
+     
+      
 
       {/* <WinRateZones>
         {playerStats.map((detail) => (
@@ -198,6 +139,6 @@ export default function PlayerStatus(): JSX.Element {
           </Fragment>
         ))}
       </WinRateZones> */}
-    </Container>
+    </main>
   );
 }
