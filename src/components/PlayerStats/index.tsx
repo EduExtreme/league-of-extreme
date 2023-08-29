@@ -1,24 +1,23 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
-import axios from "axios";
+import { useState } from 'react';
+import axios from 'axios';
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
-import { americasRiotApi, riotApi } from "@/services/api";
-import { usePlayerDetails } from "@/stores/usePlayerStore";
-import { Spinner } from "../Spinner";
-import iron from "../../../public/ranked-emblem/iron.webp"
-import bronze from "../../../public/ranked-emblem/bronze.webp"
-import silver from "../../../public/ranked-emblem/silver.webp"
-import gold from "../../../public/ranked-emblem/gold.webp"
-import platinum from "../../../public/ranked-emblem/platinum.webp"
-import emerald from "../../../public/ranked-emblem/emerald.webp"
-import diamond from "../../../public/ranked-emblem/diamond.webp"
-import master from "../../../public/ranked-emblem/master.webp"
-import grandmaster from "../../../public/ranked-emblem/grandmaster.webp"
-import challenger from "../../../public/ranked-emblem/challenger.webp"
-import Image, { StaticImageData } from "next/image";
-
+import { americasRiotApi, riotApi } from '@/services/api';
+import { usePlayerDetails } from '@/stores/usePlayerStore';
+import { Spinner } from '../Spinner';
+import iron from '../../../public/ranked-emblem/iron.webp';
+import bronze from '../../../public/ranked-emblem/bronze.webp';
+import silver from '../../../public/ranked-emblem/silver.webp';
+import gold from '../../../public/ranked-emblem/gold.webp';
+import platinum from '../../../public/ranked-emblem/platinum.webp';
+import emerald from '../../../public/ranked-emblem/emerald.webp';
+import diamond from '../../../public/ranked-emblem/diamond.webp';
+import master from '../../../public/ranked-emblem/master.webp';
+import grandmaster from '../../../public/ranked-emblem/grandmaster.webp';
+import challenger from '../../../public/ranked-emblem/challenger.webp';
+import Image, { StaticImageData } from 'next/image';
 
 export default function PlayerStatus(): JSX.Element {
   const {
@@ -28,9 +27,7 @@ export default function PlayerStatus(): JSX.Element {
     allChamps,
     rankedStats,
     loading,
-    playerMatchStats
-  
-   
+    playerMatchStats,
   } = usePlayerDetails((state) => state);
 
   const tierEmblemMapping = {
@@ -39,111 +36,127 @@ export default function PlayerStatus(): JSX.Element {
     SILVER: silver,
     GOLD: gold,
     PLATINUM: platinum,
-    EMERALD:emerald,
-    DIAMOND:diamond,
-    MASTER:master,
-    GRANDMASTER:grandmaster,
-    CHALLENGER:challenger
+    EMERALD: emerald,
+    DIAMOND: diamond,
+    MASTER: master,
+    GRANDMASTER: grandmaster,
+    CHALLENGER: challenger,
   };
 
   const playerDetailsFromMatchData: any = [];
 
   const handlePlayerNameChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     onChangePlayerName(event.target.value);
   };
 
- 
-
-
   const relevantRankedStats = rankedStats.filter(
     (ranked) =>
-      ranked.queueType === "RANKED_FLEX_SR" ||
-      ranked.queueType === "RANKED_SOLO_5x5"
+      ranked.queueType === 'RANKED_FLEX_SR' ||
+      ranked.queueType === 'RANKED_SOLO_5x5',
   );
 
   return (
     <main className="flex px-12 py-8 gap-8">
-      {loading === true ? <Spinner/> : (
- <>
-    <div className="flex gap-8">
-      {relevantRankedStats.map((ranked) => (
-        <div className="border border-blue-500 border-solid p-4 h-80" key={ranked.leagueId}>
-              <span>
-                {ranked.queueType === "RANKED_FLEX_SR" ? (
-                  <strong className="text-blue-700">Ranked Flex</strong>
-                ) : (
-                  <strong className="text-blue-700">Ranked Solo</strong>
-                )}
-              </span>
-              <Image src={tierEmblemMapping[ranked.tier]} alt={`${ranked.tier} Emblem`} />
+      {loading === true ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="flex gap-8">
+            {relevantRankedStats.map((ranked) => (
+              <div
+                className="border border-blue-500 border-solid p-4 h-80"
+                key={ranked.leagueId}
+              >
+                <span>
+                  {ranked.queueType === 'RANKED_FLEX_SR' ? (
+                    <strong className="text-blue-700">Ranked Flex</strong>
+                  ) : (
+                    <strong className="text-blue-700">Ranked Solo</strong>
+                  )}
+                </span>
+                <Image
+                  src={tierEmblemMapping[ranked.tier]}
+                  alt={`${ranked.tier} Emblem`}
+                />
                 <ul className="font-semibold text-gray-500">
-                <li className="text-blue-700 font-bold"> {ranked.tier} <span>{ranked.rank}</span></li>
-                <li> PDL - {ranked.leaguePoints}</li>
-                <li> WINS - {ranked.wins}</li>
-                <li> LOSSES - {ranked.losses}</li>
+                  <li className="text-blue-700 font-bold">
+                    {' '}
+                    {ranked.tier} <span>{ranked.rank}</span>
+                  </li>
+                  <li> PDL - {ranked.leaguePoints}</li>
+                  <li> WINS - {ranked.wins}</li>
+                  <li> LOSSES - {ranked.losses}</li>
                 </ul>
-              
-              <strong className={((ranked.wins / (ranked.wins + ranked.losses)) * 100) > 49 ? 'text-green-500' : 'text-red-500'}>
-                  Win Rate:{" "}
-                  {((ranked.wins / (ranked.wins + ranked.losses)) * 100).toFixed(2)}
+
+                <strong
+                  className={
+                    (ranked.wins / (ranked.wins + ranked.losses)) * 100 > 49
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  }
+                >
+                  Win Rate:{' '}
+                  {(
+                    (ranked.wins / (ranked.wins + ranked.losses)) *
+                    100
+                  ).toFixed(2)}
                   %
                 </strong>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col flex-1">
+            <h1 className="text-blue-700 font-bold text-2xl flex justify-center items-center">
+              {playerName} History's
+            </h1>
+            <div>
+              {Array.from({
+                length: Math.ceil(playerMatchStats.length / 10),
+              }).map((_, index) => {
+                const startIndex = index * 10;
+                const endIndex = startIndex + 10;
+                const playerGroup = playerMatchStats.slice(
+                  startIndex,
+                  endIndex,
+                );
+                return (
+                  <div key={index}>
+                    {playerGroup.map((player) => (
+                      <div
+                        key={player.id}
+                        className="border border-gray-300 p-4"
+                      >
+                        <div>
+                          <strong className="text-blue-700">
+                            {player.summonerName}
+                          </strong>
+                          {relevantRankedStats.map((ranked) => (
+                            <div key={index}>
+                              <p>
+                                {player.queue === 440
+                                  ? ranked.tier
+                                  : player.queue === 420 && ranked.tier}
+                              </p>
+                              <p>
+                                {player.queue === 440
+                                  ? 'Ranked Flex'
+                                  : 'Ranked Solo'}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                        {/* {`Summoner Name: ${player.summonerName}, Champion Name: ${player.championName}, Kills: ${player.kills}, Deaths: ${player.deaths}, Win: ${player.win}`} */}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
-      ))}
-        </div>
-        <div className="flex flex-col flex-1">
-          <h1 className="text-blue-700 font-bold text-2xl text-center">{playerName}{" "}History's</h1>
-          <div className="border border-blue-500 rounded-lg w-full h-full">
-         
-         
-         
-        {Array.from({ length: Math.ceil(playerMatchStats.length / 10) }).map((_, index) => {
-      const startIndex = index * 10;
-      const endIndex = startIndex + 10;
-      const playerGroup = playerMatchStats.slice(startIndex, endIndex);
-
-      return (
-        <div key={index} className="border-t border-gray-300 p-4">
-          {playerGroup.map((player) => (
-            <div key={player.id}>
-
-              <ul>
-                <li>{player.summonerName}</li>
-                {relevantRankedStats.map((ranked) => (
-                  <p>{ranked.tier}</p>
-
-                ))}
-                  
-             
-                
-              </ul>
-              {/* {`Summoner Name: ${player.summonerName}, Champion Name: ${player.championName}, Kills: ${player.kills}, Deaths: ${player.deaths}, Win: ${player.win}`} */}
-            </div>
-          ))}
-        </div>
-      );
-    })}
-         
-         
-         
           </div>
 
-
-          
-          
-                  
-        </div>
-
-
-        
-
-
-
-
-
-        {/* <div className="flex flex-col flex-1">
+          {/* <div className="flex flex-col flex-1">
             <h1 className="font-bold">Top 3 Mastery Champions of {playerName}:</h1>
             <ul>
               {champions.map((champion) => {
@@ -164,10 +177,8 @@ export default function PlayerStatus(): JSX.Element {
               })}
             </ul>
           </div> */}
-       </>
-) }
-     
-      
+        </>
+      )}
 
       {/* <WinRateZones>
         {playerStats.map((detail) => (

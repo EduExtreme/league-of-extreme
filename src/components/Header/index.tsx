@@ -1,13 +1,12 @@
-import { Search } from "lucide-react";
-import { InputControl, InputPrefix, InputRoot } from "../Input";
-import { usePlayerDetails } from "@/stores/usePlayerStore";
-import { v4 as uuidv4 } from "uuid";
-import { americasRiotApi, riotApi } from "@/services/api";
-import axios from "axios";
-import { useState } from "react";
+import { Search } from 'lucide-react';
+import { InputControl, InputPrefix, InputRoot } from '../Input';
+import { usePlayerDetails } from '@/stores/usePlayerStore';
+import { v4 as uuidv4 } from 'uuid';
+import { americasRiotApi, riotApi } from '@/services/api';
+import axios from 'axios';
+import { useState } from 'react';
 
-export function Header () {
-
+export function Header() {
   const {
     onChangePlayerName,
     playerName,
@@ -23,135 +22,123 @@ export function Header () {
     matchDetailsById,
     onChangeLoading,
     onChangePlayerMatchStats,
-    playerMatchStats
+    playerMatchStats,
   } = usePlayerDetails((state) => state);
 
   const handlePlayerNameChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     onChangePlayerName(event.target.value);
   };
 
-  
   const playerDetailsFromMatchData: any = [];
 
   async function handleSearchClick() {
     onChangeLoading(true);
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
     const responseSummonerData = await riotApi.get(
-      `/summoner/v4/summoners/by-name/${playerName}?api_key=${apiKey}`
+      `/summoner/v4/summoners/by-name/${playerName}?api_key=${apiKey}`,
     );
 
     const summonerId = responseSummonerData.data.id;
     const summonerPuuid = responseSummonerData.data.puuid;
 
     const statsResponse = await axios.get(
-      `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=${apiKey}`
+      `https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/top?api_key=${apiKey}`,
     );
 
     const championAllDataResponse = await axios.get(
-      `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`
+      `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`,
     );
 
     const championSelectedAllData = Object.values(
-      championAllDataResponse.data.data
+      championAllDataResponse.data.data,
     );
 
     const responseRankedQeue = await riotApi.get(
-      `/league/v4/entries/by-summoner/${summonerId}?api_key=${apiKey}`
+      `/league/v4/entries/by-summoner/${summonerId}?api_key=${apiKey}`,
     );
 
     const historicMatch = await americasRiotApi.get(
-      `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`
+      `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`,
     );
-    
 
     const allMatchGames = historicMatch.data.map(async (match: any) => {
       const Matchs = await americasRiotApi.get(
-        `lol/match/v5/matches/${match}?api_key=${apiKey}`
+        `lol/match/v5/matches/${match}?api_key=${apiKey}`,
       );
 
       return Matchs.data;
     });
 
-    
-      const matchDetailsbyGame = await Promise.all(allMatchGames);
+    const matchDetailsbyGame = await Promise.all(allMatchGames);
 
-      const matchParamsDetails = matchDetailsbyGame.map((detail) => {
+    console.log(matchDetailsbyGame.info);
 
-        
-        const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
-
-          console.log('PARTIDA', item)
-
-        
-        
-          return {
-            id: uuidv4(),
-            summonerName: item.summonerName,
-            firstblood: item.firstBloodKill,
-            championId: item.championId,
-            championName: item.championName,
-            kills: item.kills,
-            deaths: item.deaths,
-            win: item.win,
-            firstItem:item.item0,
-            secondItem:item.item1,
-            thirdItem:item.item2,
-            fourItem:item.item3,
-            fiveItem:item.item4,
-            sixItem:item.item5,
-            sevenItem:item.item6,
-            role:item.lane,
-            winner:item.win
-
-          };
-        
-        });
-
-        playerDetailsFromMatchData.push(...PlayerStatsbyMatch);
-
-        
-        return PlayerStatsbyMatch;
-
-      
+    const matchParamsDetails = matchDetailsbyGame.map((detail) => {
+      const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
+        console.log(detail);
+        return {
+          id: uuidv4(),
+          summonerName: item.summonerName,
+          firstblood: item.firstBloodKill,
+          championId: item.championId,
+          championName: item.championName,
+          kills: item.kills,
+          deaths: item.deaths,
+          win: item.win,
+          firstItem: item.item0,
+          secondItem: item.item1,
+          threeItem: item.item2,
+          fourItem: item.item3,
+          fiveItem: item.item4,
+          sixItem: item.item5,
+          sevenItem: item.item6,
+          role: item.lane,
+          queue: detail.info.queueId,
+        };
       });
 
-      console.log('MATEUS É BAITOLA ???',playerDetailsFromMatchData)
+      playerDetailsFromMatchData.push(...PlayerStatsbyMatch);
 
+      return PlayerStatsbyMatch;
+    });
+    console.log(playerDetailsFromMatchData);
     onChangePlayerName(playerName);
     onChangePlayerStats(playerDetailsFromMatchData);
     onChangeChampions(statsResponse.data);
     onChangeAllChampions(championSelectedAllData);
     onChangeRankedStats(responseRankedQeue.data);
     onChangeMatchDetailsById(allMatchGames);
-    onChangeLoading(false)
-    onChangePlayerMatchStats(playerDetailsFromMatchData)
-    
+    onChangeLoading(false);
+    onChangePlayerMatchStats(playerDetailsFromMatchData);
   }
 
-
-console.log('detalhes da partida ',playerDetailsFromMatchData)
-  
-
-  return ( 
+  return (
     <header className="bg-blue-700 h-52">
-        <div className="flex flex-col gap-2 pt-5 px-12">
-            <label htmlFor="role" className="text-xl font-semibold text-white">
-                ExtremeGG
-            </label>
-            <InputRoot>
-               <InputPrefix>
-                    <Search className="h-5 w-5 text-white" />
-                  </InputPrefix>
-                <InputControl placeholder="Search your lol profile..."
-                  value={playerName}
-                  onChange={handlePlayerNameChange}/>
-                <InputPrefix>
-                  <button className="bg-white rounded-md p-1 text-sm font-semibold text-blue-700" onClick={handleSearchClick}>.GG</button>
-                  </InputPrefix>
-                </InputRoot>
-        </div>
-      </header>
-  )
+      <div className="flex flex-col gap-2 pt-5 px-12">
+        <label htmlFor="role" className="text-xl font-semibold text-white">
+          ExtremeGG
+        </label>
+        <InputRoot>
+          <InputPrefix>
+            <Search className="h-5 w-5 text-white" />
+          </InputPrefix>
+          <InputControl
+            placeholder="Search your lol profile..."
+            value={playerName}
+            onChange={handlePlayerNameChange}
+          />
+          <InputPrefix>
+            <button
+              className="bg-white rounded-md p-1 text-sm font-semibold text-blue-700"
+              onClick={handleSearchClick}
+            >
+              .GG
+            </button>
+          </InputPrefix>
+        </InputRoot>
+      </div>
+    </header>
+  );
 }
