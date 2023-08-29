@@ -112,6 +112,12 @@ export function Header() {
     onChangePlayerMatchStats(playerDetailsFromMatchData);
   }
 
+  const handleEnterKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearchClick();
+    }
+  };
+
   return (
     <header className="bg-blue-700 h-52">
       <div className="flex flex-col gap-2 pt-5 px-12">
@@ -126,6 +132,7 @@ export function Header() {
             placeholder="Search your lol profile..."
             value={playerName}
             onChange={handlePlayerNameChange}
+            onKeyDown={handleEnterKey}
           />
           <InputPrefix>
             <button
