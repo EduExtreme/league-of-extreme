@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import axios from 'axios';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -108,48 +108,107 @@ export default function PlayerStatus(): JSX.Element {
             ))}
           </div>
           <div className="flex flex-col flex-1">
-            <h1 className="text-blue-700 font-bold text-2xl flex justify-center items-center">
-              {playerName} History's
-            </h1>
-            <div>
+            <div className="flex flex-col space-y-12 shadow-2xl">
               {Array.from({
                 length: Math.ceil(playerMatchStats.length / 10),
-              }).map((_, index) => {
-                const startIndex = index * 10;
+              }).map((_, groupIndex) => {
+                const startIndex = groupIndex * 10;
                 const endIndex = startIndex + 10;
                 const playerGroup = playerMatchStats.slice(
                   startIndex,
                   endIndex,
                 );
+
+                const currentPlayer = playerGroup.find(
+                  (player) => player.summonerName === playerName,
+                );
+                const currentPlayerWinStatus = currentPlayer
+                  ? currentPlayer.win
+                  : false;
+
+                const playersWithSameWinStatus = playerGroup.filter(
+                  (player) => player.win === currentPlayerWinStatus,
+                );
+
+                if (currentPlayer) {
+                  const currentPlayerIndex = playersWithSameWinStatus.findIndex(
+                    (player) => player.summonerName === playerName,
+                  );
+                  if (currentPlayerIndex !== -1) {
+                    playersWithSameWinStatus.splice(currentPlayerIndex, 1);
+                    playersWithSameWinStatus.unshift(currentPlayer);
+                  }
+                }
+
+                const playersWithOppositeWinStatus = playerGroup.filter(
+                  (player) => player.win !== currentPlayerWinStatus,
+                );
+
                 return (
-                  <div key={index}>
-                    {playerGroup.map((player) => (
-                      <div
-                        key={player.id}
-                        className="border border-gray-300 p-4"
-                      >
-                        <div>
-                          <strong className="text-blue-700">
-                            {player.summonerName}
-                          </strong>
-                          {relevantRankedStats.map((ranked) => (
-                            <div key={index}>
-                              <p>
-                                {player.queue === 440
-                                  ? ranked.tier
-                                  : player.queue === 420 && ranked.tier}
-                              </p>
-                              <p>
-                                {player.queue === 440
-                                  ? 'Ranked Flex'
-                                  : 'Ranked Solo'}
-                              </p>
+                  <div key={groupIndex}>
+                    <div className="flex flex-col">
+                      {[
+                        ...playersWithSameWinStatus,
+                        ...playersWithOppositeWinStatus,
+                      ].map((player, index) => {
+                        const lastRankedStats = relevantRankedStats.find(
+                          (ranked) =>
+                            (ranked.queueType === 'RANKED_FLEX_SR' &&
+                              player.queue === 440) ||
+                            (ranked.queueType === 'RANKED_SOLO_5x5' &&
+                              player.queue === 420),
+                        );
+
+                        return (
+                          <div key={player.id}>
+                            <div className="flex justify-between border border-blue-600 p-4">
+                              <div className="">
+                                <div key={lastRankedStats?.leagueId}>
+                                  <p>
+                                    {index === 0
+                                      ? player.queue === 440
+                                        ? 'Ranked Flex'
+                                        : player.queue === 420
+                                        ? 'Ranked Solo'
+                                        : ''
+                                      : ''}
+                                  </p>
+                                  <strong className="text-blue-700">
+                                    <div className="flex gap-3">
+                                      {player.summonerName}
+                                      <p className="text-red-500">
+                                        {player.role}
+                                      </p>
+                                    </div>
+                                  </strong>
+
+                                  {lastRankedStats && (
+                                    <p>{lastRankedStats.tier}</p>
+                                  )}
+                                  <div>
+                                    <p>{player.championName}</p>
+                                    <p>
+                                      {player.kills}/{player.deaths}
+                                    </p>
+                                    <p>
+                                      {player.win === true ? 'Win' : 'Loss'}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="space-x-2">
+                                <span>{player.firstItem}</span>
+                                <span>{player.secondItem}</span>
+                                <span>{player.threeItem}</span>
+                                <span>{player.fourItem}</span>
+                                <span>{player.fiveItem}</span>
+                                <span>{player.sixItem}</span>
+                              </div>
                             </div>
-                          ))}
-                        </div>
-                        {/* {`Summoner Name: ${player.summonerName}, Champion Name: ${player.championName}, Kills: ${player.kills}, Deaths: ${player.deaths}, Win: ${player.win}`} */}
-                      </div>
-                    ))}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}

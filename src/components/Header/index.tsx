@@ -73,11 +73,8 @@ export function Header() {
 
     const matchDetailsbyGame = await Promise.all(allMatchGames);
 
-    console.log(matchDetailsbyGame.info);
-
     const matchParamsDetails = matchDetailsbyGame.map((detail) => {
       const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
-        console.log(detail);
         return {
           id: uuidv4(),
           summonerName: item.summonerName,
@@ -103,7 +100,8 @@ export function Header() {
 
       return PlayerStatsbyMatch;
     });
-    console.log(playerDetailsFromMatchData);
+
+    // console.log(playerDetailsFromMatchData);
     onChangePlayerName(playerName);
     onChangePlayerStats(playerDetailsFromMatchData);
     onChangeChampions(statsResponse.data);
