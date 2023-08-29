@@ -39,6 +39,10 @@ type PlayerDetails = {
 
   loading: boolean;
   onChangeLoading: (load: boolean) => void;
+
+  playerMatchStats: any[],
+  onChangePlayerMatchStats: (playerMatch: any[]) => void;
+
 };
 
 export const usePlayerDetails = create<PlayerDetails>((set) => ({
@@ -69,5 +73,11 @@ export const usePlayerDetails = create<PlayerDetails>((set) => ({
   loading: false,
   onChangeLoading: (load) => {
     set({ loading: load });
+  },
+
+  playerMatchStats:[],
+  onChangePlayerMatchStats:(playerMatch) => {
+  set({ playerMatchStats: playerMatch });
   }
+
 }));

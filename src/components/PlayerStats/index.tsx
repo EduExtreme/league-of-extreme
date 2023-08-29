@@ -28,6 +28,8 @@ export default function PlayerStatus(): JSX.Element {
     allChamps,
     rankedStats,
     loading,
+    playerMatchStats
+  
    
   } = usePlayerDetails((state) => state);
 
@@ -67,7 +69,7 @@ export default function PlayerStatus(): JSX.Element {
  <>
     <div className="flex gap-8">
       {relevantRankedStats.map((ranked) => (
-        <div className="border border-blue-500 border-solid p-4" key={ranked.leagueId}>
+        <div className="border border-blue-500 border-solid p-4 h-80" key={ranked.leagueId}>
               <span>
                 {ranked.queueType === "RANKED_FLEX_SR" ? (
                   <strong className="text-blue-700">Ranked Flex</strong>
@@ -76,23 +78,66 @@ export default function PlayerStatus(): JSX.Element {
                 )}
               </span>
               <Image src={tierEmblemMapping[ranked.tier]} alt={`${ranked.tier} Emblem`} />
-              <ul className="font-semibold text-gray-500">
-              <li className="text-blue-700 font-bold"> {ranked.tier} <span>{ranked.rank}</span></li>
-              <li> PDL - {ranked.leaguePoints}</li>
-              <li> WINS - {ranked.wins}</li>
-              <li> LOSSES - {ranked.losses}</li>
-              </ul>
+                <ul className="font-semibold text-gray-500">
+                <li className="text-blue-700 font-bold"> {ranked.tier} <span>{ranked.rank}</span></li>
+                <li> PDL - {ranked.leaguePoints}</li>
+                <li> WINS - {ranked.wins}</li>
+                <li> LOSSES - {ranked.losses}</li>
+                </ul>
               
-              <strong className={((ranked.wins / (ranked.wins + ranked.losses)) * 100) > 51 ? 'text-green-500' : 'text-red-500'}>
+              <strong className={((ranked.wins / (ranked.wins + ranked.losses)) * 100) > 49 ? 'text-green-500' : 'text-red-500'}>
                   Win Rate:{" "}
                   {((ranked.wins / (ranked.wins + ranked.losses)) * 100).toFixed(2)}
                   %
                 </strong>
             </div>
+      ))}
+        </div>
+        <div className="flex flex-col flex-1">
+          <h1 className="text-blue-700 font-bold text-2xl text-center">{playerName}{" "}History's</h1>
+          <div className="border border-blue-500 rounded-lg w-full h-full">
+         
+         
+         
+        {Array.from({ length: Math.ceil(playerMatchStats.length / 10) }).map((_, index) => {
+      const startIndex = index * 10;
+      const endIndex = startIndex + 10;
+      const playerGroup = playerMatchStats.slice(startIndex, endIndex);
+
+      return (
+        <div key={index} className="border-t border-gray-300 p-4">
+          {playerGroup.map((player) => (
+            <div key={player.id}>
+
+              <ul>
+                <li>{player.summonerName}</li>
+                {relevantRankedStats.map((ranked) => (
+                  <p>{ranked.tier}</p>
+
+                ))}
+                  
+             
+                
+              </ul>
+              {/* {`Summoner Name: ${player.summonerName}, Champion Name: ${player.championName}, Kills: ${player.kills}, Deaths: ${player.deaths}, Win: ${player.win}`} */}
+            </div>
           ))}
         </div>
-        <div className="flex flex-1 justify-center">
-          <h1 className="text-blue-700 font-bold text-2xl">{playerName}{" "}History's</h1></div>
+      );
+    })}
+         
+         
+         
+          </div>
+
+
+          
+          
+                  
+        </div>
+
+
+        
 
 
 

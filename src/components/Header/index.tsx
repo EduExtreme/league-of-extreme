@@ -8,7 +8,6 @@ import { useState } from "react";
 
 export function Header () {
 
-
   const {
     onChangePlayerName,
     playerName,
@@ -23,6 +22,8 @@ export function Header () {
     onChangeMatchDetailsById,
     matchDetailsById,
     onChangeLoading,
+    onChangePlayerMatchStats,
+    playerMatchStats
   } = usePlayerDetails((state) => state);
 
   const handlePlayerNameChange = (
@@ -63,6 +64,7 @@ export function Header () {
     const historicMatch = await americasRiotApi.get(
       `lol/match/v5/matches/by-puuid/${summonerPuuid}/ids?start=0&count=20&api_key=${apiKey}`
     );
+    
 
     const allMatchGames = historicMatch.data.map(async (match: any) => {
       const Matchs = await americasRiotApi.get(
@@ -71,27 +73,52 @@ export function Header () {
 
       return Matchs.data;
     });
-    const matchDetailsbyGame = await Promise.all(allMatchGames);
 
-    const matchParamsDetails = matchDetailsbyGame.map((detail) => {
-      const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
-        return {
-          id: uuidv4(),
-          summonerName: item.summonerName,
-          championId: item.championId,
-          championName: item.championName,
-          kills: item.kills,
-          death: item.deaths,
-          win: item.win,
-        };
+    
+      const matchDetailsbyGame = await Promise.all(allMatchGames);
+
+      const matchParamsDetails = matchDetailsbyGame.map((detail) => {
+
+        
+        const PlayerStatsbyMatch = detail.info.participants.map((item: any) => {
+
+          console.log('PARTIDA', item)
+
+        
+        
+          return {
+            id: uuidv4(),
+            summonerName: item.summonerName,
+            firstblood: item.firstBloodKill,
+            championId: item.championId,
+            championName: item.championName,
+            kills: item.kills,
+            deaths: item.deaths,
+            win: item.win,
+            firstItem:item.item0,
+            secondItem:item.item1,
+            thirdItem:item.item2,
+            fourItem:item.item3,
+            fiveItem:item.item4,
+            sixItem:item.item5,
+            sevenItem:item.item6,
+            role:item.lane,
+            winner:item.win
+
+          };
+        
+        });
+
+        playerDetailsFromMatchData.push(...PlayerStatsbyMatch);
+
+        
+        return PlayerStatsbyMatch;
+
+      
       });
 
-      PlayerStatsbyMatch.forEach((item: any) => {
-        playerDetailsFromMatchData.push(item);
-      });
-    });
+      console.log('MATEUS É BAITOLA ???',playerDetailsFromMatchData)
 
-    console.log("Ranked Queue : ", rankedStats);
     onChangePlayerName(playerName);
     onChangePlayerStats(playerDetailsFromMatchData);
     onChangeChampions(statsResponse.data);
@@ -99,31 +126,31 @@ export function Header () {
     onChangeRankedStats(responseRankedQeue.data);
     onChangeMatchDetailsById(allMatchGames);
     onChangeLoading(false)
+    onChangePlayerMatchStats(playerDetailsFromMatchData)
     
   }
 
-  console.log('PLAYER STATUS :',playerStats)
-  console.log('matchDetailsById:',matchDetailsById)
-  console.log("champions",champions)
+
+console.log('detalhes da partida ',playerDetailsFromMatchData)
+  
 
   return ( 
     <header className="bg-blue-700 h-52">
         <div className="flex flex-col gap-2 pt-5 px-12">
-          <label htmlFor="role" className="text-xl font-semibold text-white">
-              ExtremeGG
-          </label>
-          <InputRoot>
-          
-          <InputPrefix>
-            <Search className="h-5 w-5 text-white" />
-          </InputPrefix>
-        <InputControl placeholder="Search your lol profile..."
-          value={playerName}
-          onChange={handlePlayerNameChange}/>
-        <InputPrefix>
-           <button className="bg-white rounded-md p-1 text-sm font-semibold text-blue-700" onClick={handleSearchClick}>.GG</button>
-          </InputPrefix>
-        </InputRoot>
+            <label htmlFor="role" className="text-xl font-semibold text-white">
+                ExtremeGG
+            </label>
+            <InputRoot>
+               <InputPrefix>
+                    <Search className="h-5 w-5 text-white" />
+                  </InputPrefix>
+                <InputControl placeholder="Search your lol profile..."
+                  value={playerName}
+                  onChange={handlePlayerNameChange}/>
+                <InputPrefix>
+                  <button className="bg-white rounded-md p-1 text-sm font-semibold text-blue-700" onClick={handleSearchClick}>.GG</button>
+                  </InputPrefix>
+                </InputRoot>
         </div>
       </header>
   )
