@@ -19,6 +19,12 @@ import grandmaster from '../../../public/ranked-emblem/grandmaster.webp';
 import challenger from '../../../public/ranked-emblem/challenger.webp';
 import Image, { StaticImageData } from 'next/image';
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 export default function PlayerStatus(): JSX.Element {
   const {
     onChangePlayerName,
@@ -108,7 +114,7 @@ export default function PlayerStatus(): JSX.Element {
             ))}
           </div>
           <div className="flex flex-col flex-1">
-            <div className="flex flex-col space-y-12 shadow-2xl">
+            <div className="flex flex-col space-y-12">
               {Array.from({
                 length: Math.ceil(playerMatchStats.length / 10),
               }).map((_, groupIndex) => {
@@ -160,50 +166,73 @@ export default function PlayerStatus(): JSX.Element {
                         );
 
                         return (
-                          <div key={player.id}>
-                            <div className="flex justify-between border border-blue-600 p-4">
-                              <div className="">
-                                <div key={lastRankedStats?.leagueId}>
-                                  <p>
-                                    {index === 0
-                                      ? player.queue === 440
-                                        ? 'Ranked Flex'
-                                        : player.queue === 420
-                                        ? 'Ranked Solo'
-                                        : ''
-                                      : ''}
-                                  </p>
-                                  <strong className="text-blue-700">
-                                    <div className="flex gap-3">
-                                      {player.summonerName}
-                                      <p className="text-red-500">
-                                        {player.role}
-                                      </p>
-                                    </div>
-                                  </strong>
-
-                                  {lastRankedStats && (
-                                    <p>{lastRankedStats.tier}</p>
-                                  )}
+                          <div
+                            key={player.id}
+                            className="bg-blue-100 shadow-2xl"
+                          >
+                            <Accordion
+                              type="single"
+                              collapsible
+                              key={lastRankedStats?.leagueId}
+                            >
+                              <AccordionItem value="item-1">
+                                <AccordionTrigger className="flex flex-1 items-center justify-between ">
                                   <div>
-                                    <p>{player.championName}</p>
-                                    <p>
-                                      {player.kills}/{player.deaths}
-                                    </p>
-                                    <p>
-                                      {player.win === true ? 'Win' : 'Loss'}
-                                    </p>
+                                    <div className="bg-blue-600 w-28 flex justify-center">
+                                      <span className="font-semibold text-white">
+                                        {index === 0
+                                          ? player.queue === 440
+                                            ? 'Ranked Flex'
+                                            : player.queue === 420
+                                            ? 'Ranked Solo'
+                                            : ''
+                                          : ''}
+                                      </span>
+                                    </div>
+                                    <div className="text-blue-700 font-semibold p-2 flex items-center justify-center">
+                                      <div className="flex items-center justify-center gap-4">
+                                        <div className="flex flex-col">
+                                          <span className="">
+                                            {player.summonerName}
+                                          </span>
+                                          <div className="flex gap-3">
+                                            <span className="">
+                                              {player.championName}
+                                            </span>
+                                            <span className="">
+                                              {player.kills}/{player.deaths}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <div className="text-blue-600">
+                                          <span className="">
+                                            {lastRankedStats && (
+                                              <p className="text-blue-600">
+                                                {lastRankedStats.tier}
+                                                {lastRankedStats.rank}
+                                              </p>
+                                            )}
+                                          </span>
+                                        </div>
+                                        <div className="w-32 space-x-2">
+                                          <span>{player.firstItem}</span>
+                                          <span>{player.secondItem}</span>
+                                          <span>{player.threeItem}</span>
+                                          <span>{player.fourItem}</span>
+                                          <span>{player.fiveItem}</span>
+                                          <span>{player.sixItem}</span>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                              <div className="space-x-2">
-                                <span>{player.firstItem}</span>
-                                <span>{player.secondItem}</span>
-                                <span>{player.threeItem}</span>
-                                <span>{player.fourItem}</span>
-                                <span>{player.fiveItem}</span>
-                                <span>{player.sixItem}</span>
-                              </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                  aqui esta do segundo indice do grupo em diante
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
+                            <div className="flex flex-col gap-6">
+                              <div></div>
                             </div>
                           </div>
                         );
