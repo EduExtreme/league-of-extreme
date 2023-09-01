@@ -36,6 +36,9 @@ export default function PlayerStatus(): JSX.Element {
     playerMatchStats,
   } = usePlayerDetails((state) => state);
 
+  const championIconBaseUrl =
+    'http://ddragon.leagueoflegends.com/cdn/10.23.1/img/champion/';
+
   const tierEmblemMapping = {
     IRON: iron,
     BRONZE: bronze,
@@ -62,7 +65,6 @@ export default function PlayerStatus(): JSX.Element {
       ranked.queueType === 'RANKED_FLEX_SR' ||
       ranked.queueType === 'RANKED_SOLO_5x5',
   );
-
   return (
     <main className="flex px-12 py-8 gap-8">
       {loading === true ? (
@@ -150,55 +152,164 @@ export default function PlayerStatus(): JSX.Element {
                   (player) => player.win !== currentPlayerWinStatus,
                 );
 
+                const summonerNameFirstPlayer =
+                  playersWithSameWinStatus[0].summonerName;
+
+                const summonerNameChampion =
+                  playersWithSameWinStatus[0].championName;
+
+                const summonerNameRole = playersWithSameWinStatus[0].role;
+                const summonerNameKills = playersWithSameWinStatus[0].kills;
+                const summonerNameDeaths = playersWithSameWinStatus[0].deaths;
+                const summonerNameAssists = playersWithSameWinStatus[0].assists;
+                const summonerNameWin = playersWithSameWinStatus[0].win;
+
+                const summonerNameFirstBlood =
+                  playersWithSameWinStatus[0].firstblood;
+
+                const summonerNameItem1 = playersWithSameWinStatus[0].firstItem;
+                const summonerNameItem2 =
+                  playersWithSameWinStatus[0].secondItem;
+                const summonerNameItem3 = playersWithSameWinStatus[0].ThreeItem;
+                const summonerNameItem4 = playersWithSameWinStatus[0].fourItem;
+                const summonerNameItem5 = playersWithSameWinStatus[0].fiveItem;
+                const summonerNameItem6 = playersWithSameWinStatus[0].sixItem;
+
+                const summonerQueue = playersWithSameWinStatus[0].queue;
+
+                const rankedQueue = relevantRankedStats.find(
+                  (ranked) =>
+                    (ranked.queueType === 'RANKED_FLEX_SR' &&
+                      summonerQueue === 440) ||
+                    (ranked.queueType === 'RANKED_SOLO_5x5' &&
+                      summonerQueue === 420),
+                );
+
                 return (
                   <div key={groupIndex}>
                     <div className="flex flex-col">
-                      {[
-                        ...playersWithSameWinStatus,
-                        ...playersWithOppositeWinStatus,
-                      ].map((player, index) => {
-                        const lastRankedStats = relevantRankedStats.find(
-                          (ranked) =>
-                            (ranked.queueType === 'RANKED_FLEX_SR' &&
-                              player.queue === 440) ||
-                            (ranked.queueType === 'RANKED_SOLO_5x5' &&
-                              player.queue === 420),
-                        );
-
-                        return (
-                          <div
-                            key={player.id}
-                            className="bg-blue-100 shadow-2xl"
+                      {playersWithSameWinStatus.length > 0 && (
+                        <Accordion
+                          type="single"
+                          collapsible
+                          key={playersWithSameWinStatus[0].id}
+                        >
+                          <AccordionItem
+                            value={`item-${groupIndex}`}
+                            className={` ${
+                              summonerNameWin ? 'bg-blue-200' : 'bg-red-200'
+                            }`}
                           >
-                            <Accordion
-                              type="single"
-                              collapsible
-                              key={lastRankedStats?.leagueId}
+                            <AccordionTrigger
+                              className={`flex flex-1 items-center justify-between border-l-[12px] ${
+                                summonerNameWin
+                                  ? 'border-blue-500'
+                                  : 'border-red-500'
+                              }`}
                             >
-                              <AccordionItem value="item-1">
-                                <AccordionTrigger className="flex flex-1 items-center justify-between ">
-                                  <div>
-                                    <div className="bg-blue-600 w-28 flex justify-center">
-                                      <span className="font-semibold text-white">
-                                        {index === 0
-                                          ? player.queue === 440
-                                            ? 'Ranked Flex'
-                                            : player.queue === 420
-                                            ? 'Ranked Solo'
-                                            : ''
-                                          : ''}
+                              <div className="">
+                                <div className="bg-blue-600 w-[130px] flex justify-center">
+                                  <span className="font-semibold text-white">
+                                    {playersWithSameWinStatus[0].queue === 440
+                                      ? 'Ranked Flex'
+                                      : playersWithSameWinStatus[0].queue ===
+                                        420
+                                      ? 'Ranked Solo'
+                                      : ''}
+                                  </span>
+                                </div>
+                                <div className="flex gap-2 pl-3 pb-2 pt-2">
+                                  <div className="flex flex-col">
+                                    <span className="text-blue-700 font-bold">
+                                      {summonerNameFirstPlayer}
+                                    </span>
+                                    <div className="flex items-center gap-1">
+                                      {rankedQueue && rankedQueue.tier && (
+                                        <span>
+                                          <Image
+                                            width={24}
+                                            height={24}
+                                            src={
+                                              tierEmblemMapping[
+                                                rankedQueue.tier
+                                              ]
+                                            }
+                                            alt={`${rankedQueue.tier} Emblem`}
+                                          />
+                                        </span>
+                                      )}
+                                      <span className="text-blue-700 font-bold">
+                                        {rankedQueue?.rank}
                                       </span>
                                     </div>
-                                    <div className="text-blue-700 font-semibold p-2 flex items-center justify-center">
+
+                                    <div className="flex gap-1">
+                                      <div className="">
+                                        <Image
+                                          width={32}
+                                          height={32}
+                                          src={`${championIconBaseUrl}${summonerNameChampion}.png`}
+                                          alt={`${summonerNameChampion} Icon`}
+                                        />
+                                      </div>
+                                      <div className="text-blue-700 font-medium">
+                                        <strong className="mr-2">KDA</strong>
+                                        <span>{summonerNameKills}</span>/
+                                        <span>{summonerNameDeaths}</span>/
+                                        <span>{summonerNameAssists}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <span>{summonerNameRole}</span>
+
+                                  <ul className="flex gap-3">
+                                    <li>{summonerNameItem1}</li>
+                                    <li>{summonerNameItem2}</li>
+                                    <li>{summonerNameItem3}</li>
+                                    <li>{summonerNameItem4}</li>
+                                    <li>{summonerNameItem5}</li>
+                                    <li>{summonerNameItem6}</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </AccordionTrigger>
+
+                            {[
+                              ...playersWithSameWinStatus,
+                              ...playersWithOppositeWinStatus,
+                            ]
+                              .slice(1)
+                              .map((player, index) => {
+                                const lastRankedStats =
+                                  relevantRankedStats.find(
+                                    (ranked) =>
+                                      (ranked.queueType === 'RANKED_FLEX_SR' &&
+                                        player.queue === 440) ||
+                                      (ranked.queueType === 'RANKED_SOLO_5x5' &&
+                                        player.queue === 420),
+                                  );
+
+                                return (
+                                  <AccordionContent
+                                    key={player.id}
+                                    className={`text-blue-700 font-semibold p-2 data-[state=closed]:hidden flex items-center ${
+                                      player.win ? 'bg-blue-200' : 'bg-red-200'
+                                    }`}
+                                  >
+                                    <div className="text-blue-700 font-semibold p-2 flex items-center ">
                                       <div className="flex items-center justify-center gap-4">
                                         <div className="flex flex-col">
                                           <span className="">
                                             {player.summonerName}
                                           </span>
                                           <div className="flex gap-3">
-                                            <span className="">
-                                              {player.championName}
-                                            </span>
+                                            <Image
+                                              width={32}
+                                              height={32}
+                                              src={`${championIconBaseUrl}${player.championName}.png`}
+                                              alt={`${player.championName} Icon`}
+                                            />
                                             <span className="">
                                               {player.kills}/{player.deaths}
                                             </span>
@@ -208,8 +319,21 @@ export default function PlayerStatus(): JSX.Element {
                                           <span className="">
                                             {lastRankedStats && (
                                               <p className="text-blue-600">
-                                                {lastRankedStats.tier}
-                                                {lastRankedStats.rank}
+                                                <div className="flex items-center gap-2">
+                                                  <Image
+                                                    width={32}
+                                                    height={32}
+                                                    src={
+                                                      tierEmblemMapping[
+                                                        lastRankedStats.tier
+                                                      ]
+                                                    }
+                                                    alt={`${rankedQueue?.tier} Emblem`}
+                                                  />
+                                                  <span>
+                                                    {lastRankedStats.rank}
+                                                  </span>
+                                                </div>
                                               </p>
                                             )}
                                           </span>
@@ -224,19 +348,12 @@ export default function PlayerStatus(): JSX.Element {
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  aqui esta do segundo indice do grupo em diante
-                                </AccordionContent>
-                              </AccordionItem>
-                            </Accordion>
-                            <div className="flex flex-col gap-6">
-                              <div></div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                                  </AccordionContent>
+                                );
+                              })}
+                          </AccordionItem>
+                        </Accordion>
+                      )}
                     </div>
                   </div>
                 );

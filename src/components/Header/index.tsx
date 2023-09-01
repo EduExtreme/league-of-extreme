@@ -83,6 +83,7 @@ export function Header() {
           championName: item.championName,
           kills: item.kills,
           deaths: item.deaths,
+          assists: item.assists,
           win: item.win,
           firstItem: item.item0,
           secondItem: item.item1,
@@ -93,6 +94,11 @@ export function Header() {
           sevenItem: item.item6,
           role: item.lane,
           queue: detail.info.queueId,
+          triples: item.tripleKills,
+          farm: item.totalMinionsKilled,
+          gameCreation: detail.info.gameCreation,
+          gameDuration: detail.info.gameDuration,
+          gameEndTimestamp: detail.info.gameEndTimestamp,
         };
       });
 
