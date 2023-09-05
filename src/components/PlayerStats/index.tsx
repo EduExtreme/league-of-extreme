@@ -76,10 +76,6 @@ export default function PlayerStatus(): JSX.Element {
   const championIconBaseUrl =
     'http://ddragon.leagueoflegends.com/cdn/13.17.1/img/champion/';
 
-  // const playerDetailsFromMatchData: any = [];
-
-  // console.log(playerDetailsFromMatchData);
-
   const handlePlayerNameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -141,8 +137,9 @@ export default function PlayerStatus(): JSX.Element {
               </div>
             ))}
           </div>
+
           <div className="flex flex-col flex-1">
-            <div className="flex flex-col space-y-12">
+            <div className="flex flex-col space-y-8">
               {Array.from({
                 length: Math.ceil(playerMatchStats.length / 10),
               }).map((_, groupIndex) => {
@@ -248,18 +245,18 @@ export default function PlayerStatus(): JSX.Element {
                           <AccordionItem
                             value={`item-${groupIndex}`}
                             className={` ${
-                              summonerNameWin ? 'bg-blue-200' : 'bg-red-200'
+                              summonerNameWin ? 'bg-blue-100' : 'bg-red-100'
                             }`}
                           >
                             <AccordionTrigger
-                              className={`flex flex-1 items-center justify-between border-l-[12px] ${
+                              className={`flex flex-1 items-center border-l-[12px] ${
                                 summonerNameWin
                                   ? 'border-blue-500'
                                   : 'border-red-500'
                               }`}
                             >
-                              <div className="">
-                                <div className="bg-blue-600 w-[130px] flex justify-center">
+                              <div className="w-full">
+                                <div className="bg-blue-600 flex justify-center">
                                   <span className="font-semibold text-white">
                                     {playersWithSameWinStatus[0].queue === 440
                                       ? 'Ranked Flex'
