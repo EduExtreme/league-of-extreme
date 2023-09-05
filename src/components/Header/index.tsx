@@ -1,6 +1,9 @@
 import { Search } from 'lucide-react';
 import { InputControl, InputPrefix, InputRoot } from '../Input';
-import { usePlayerDetails } from '@/stores/usePlayerStore';
+import {
+  ChampionSelectedAllData,
+  usePlayerDetails,
+} from '@/stores/usePlayerStore';
 import { v4 as uuidv4 } from 'uuid';
 import { americasRiotApi, riotApi } from '@/services/api';
 import axios from 'axios';
@@ -51,7 +54,7 @@ export function Header() {
       `https://ddragon.leagueoflegends.com/cdn/13.7.1/data/pt_BR/champion.json`,
     );
 
-    const championSelectedAllData = Object.values(
+    const championSelectedAllData: ChampionSelectedAllData[] = Object.values(
       championAllDataResponse.data.data,
     );
 
@@ -81,6 +84,8 @@ export function Header() {
           firstblood: item.firstBloodKill,
           championId: item.championId,
           championName: item.championName,
+          firstSpell: item.summoner1Id,
+          secondSpell: item.summoner2Id,
           kills: item.kills,
           deaths: item.deaths,
           assists: item.assists,
@@ -92,7 +97,7 @@ export function Header() {
           fiveItem: item.item4,
           sixItem: item.item5,
           sevenItem: item.item6,
-          role: item.lane,
+          role: item.individualPosition,
           queue: detail.info.queueId,
           triples: item.tripleKills,
           farm: item.totalMinionsKilled,
@@ -107,7 +112,6 @@ export function Header() {
       return PlayerStatsbyMatch;
     });
 
-    // console.log(playerDetailsFromMatchData);
     onChangePlayerName(playerName);
     onChangePlayerStats(playerDetailsFromMatchData);
     onChangeChampions(statsResponse.data);

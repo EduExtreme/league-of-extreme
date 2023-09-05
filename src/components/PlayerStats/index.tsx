@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { Fragment, useState } from 'react';
 import axios from 'axios';
 
@@ -55,12 +54,20 @@ export default function PlayerStatus(): JSX.Element {
     CHALLENGER: challenger,
   };
 
-  const positionRole = {
+  interface Teste {
+    TOP: StaticImageData;
+    JUNGLE: StaticImageData;
+    MIDDLE: StaticImageData;
+    BOTTOM: StaticImageData;
+    UTILITY: StaticImageData;
+  }
+
+  const positionRole: Teste = {
     TOP: top,
     JUNGLE: jungle,
-    MID: mid,
+    MIDDLE: mid,
     BOTTOM: bot,
-    SUP: sup,
+    UTILITY: sup,
   };
 
   const itemIconBaseUrl =
@@ -69,7 +76,9 @@ export default function PlayerStatus(): JSX.Element {
   const championIconBaseUrl =
     'http://ddragon.leagueoflegends.com/cdn/13.17.1/img/champion/';
 
-  const playerDetailsFromMatchData: any = [];
+  // const playerDetailsFromMatchData: any = [];
+
+  // console.log(playerDetailsFromMatchData);
 
   const handlePlayerNameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -117,7 +126,7 @@ export default function PlayerStatus(): JSX.Element {
 
                 <strong
                   className={
-                    (ranked.wins / (ranked.wins + ranked.losses)) * 100 > 49
+                    (ranked.wins / (ranked.wins + ranked.losses)) * 100 > 51
                       ? 'text-green-500'
                       : 'text-red-500'
                   }
@@ -171,12 +180,9 @@ export default function PlayerStatus(): JSX.Element {
 
                 const summonerNameFirstPlayer =
                   playersWithSameWinStatus[0].summonerName;
-
                 const summonerNameChampion =
                   playersWithSameWinStatus[0].championName;
-
                 const summonerNameRole = playersWithSameWinStatus[0].role;
-
                 const summonerNameKills = playersWithSameWinStatus[0].kills;
                 const summonerNameDeaths = playersWithSameWinStatus[0].deaths;
                 const summonerNameAssists = playersWithSameWinStatus[0].assists;
@@ -300,17 +306,18 @@ export default function PlayerStatus(): JSX.Element {
                                       <div className="text-blue-700 font-medium">
                                         <strong className="mr-2">KDA</strong>
                                         <span>{summonerNameKills}</span>/
-                                        <span>{summonerNameDeaths}</span>/
-                                        <span>{summonerNameAssists}</span>
+                                        <span className="text-red-600">
+                                          {summonerNameDeaths}
+                                        </span>
+                                        /<span>{summonerNameAssists}</span>
                                       </div>
                                     </div>
                                   </div>
                                   <div className="">
-                                    <span>{summonerNameRole}</span>
-                                    {/* <Image
+                                    <Image
                                       src={positionRole[summonerNameRole]}
                                       alt="ROLE"
-                                    /> */}
+                                    />
                                   </div>
 
                                   <ul className="flex gap-3">
@@ -398,7 +405,10 @@ export default function PlayerStatus(): JSX.Element {
                                             )}
                                           </span>
                                         </div>
-                                        <span>{player.role}</span>
+                                        <Image
+                                          src={positionRole[player.role]}
+                                          alt="ROLE"
+                                        />
                                         <div className="w-32 space-x-2 flex items-center">
                                           <Image
                                             alt="item"

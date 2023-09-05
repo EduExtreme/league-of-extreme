@@ -1,8 +1,47 @@
 import { create } from 'zustand';
 
 type Tier = "IRON" | "BRONZE" | "SILVER" | "GOLD" | "PLATINUM" | "EMERALD" | "DIAMOND" | "MASTER" | "GRANDMASTER" | "CHALLENGER";
+type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY"
 
-type ChampionSelectedAllData = {
+export interface PlayerMatchStat  {
+  kills:number,
+  deaths:string,
+  assists: number,
+  championId: number,
+  summonerName:string,
+  championName:string,
+  firstblood:boolean,
+  farm:number,
+  firstSpell:number,
+  secondSpell:number,
+  firstItem:number,
+  secondItem:number,
+  threeItem:number,
+  fourItem:number,
+  fiveItem:number,
+  sixItem:number,
+  sevenItem:number,
+  gameCreation:number,
+  gameDuration:number,
+  gameEndTimesTamp:number,
+  id:string,
+  queue:number,
+  role:Role,
+  triples:number,
+  win:boolean,
+}
+
+interface Champions {
+  championId:number,
+  championLevel:number,
+  championPoints:number,
+  championPointsSinceLastLevel:number,
+  championPointsUntilNextLevel:number,
+  lastPlayTime:number,
+  summonerId:string
+}
+
+export interface ChampionSelectedAllData {
   id: string;
   name: string;
   key: string;
@@ -22,11 +61,11 @@ type PlayerDetails = {
   playerName: string;
   onChangePlayerName: (name: string) => void;
  
-  champions: any[];
-  onChangeChampions: (champ: any[]) => void;
+  champions: Champions[];
+  onChangeChampions: (champ: Champions[]) => void;
 
   allChamps:ChampionSelectedAllData[],
-  onChangeAllChampions: (all: any[]) => void
+  onChangeAllChampions: (all: ChampionSelectedAllData[]) => void
   
   rankedStats: RankedStat[];
   onChangeRankedStats: (ranked: RankedStat[]) => void;
@@ -40,8 +79,8 @@ type PlayerDetails = {
   loading: boolean;
   onChangeLoading: (load: boolean) => void;
 
-  playerMatchStats: any[],
-  onChangePlayerMatchStats: (playerMatch: any[]) => void;
+  playerMatchStats: PlayerMatchStat[],
+  onChangePlayerMatchStats: (playerMatch: PlayerMatchStat[]) => void;
 
 };
 
