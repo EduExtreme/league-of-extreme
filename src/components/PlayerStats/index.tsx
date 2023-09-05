@@ -42,12 +42,6 @@ export default function PlayerStatus(): JSX.Element {
     playerMatchStats,
   } = usePlayerDetails((state) => state);
 
-  const itemIconBaseUrl =
-    'https://ddragon.leagueoflegends.com/cdn/13.17.1/img/item/';
-
-  const championIconBaseUrl =
-    'http://ddragon.leagueoflegends.com/cdn/13.17.1/img/champion/';
-
   const tierEmblemMapping = {
     IRON: iron,
     BRONZE: bronze,
@@ -66,8 +60,14 @@ export default function PlayerStatus(): JSX.Element {
     JUNGLE: jungle,
     MID: mid,
     BOTTOM: bot,
-    SUP: bot,
+    SUP: sup,
   };
+
+  const itemIconBaseUrl =
+    'https://ddragon.leagueoflegends.com/cdn/13.17.1/img/item/';
+
+  const championIconBaseUrl =
+    'http://ddragon.leagueoflegends.com/cdn/13.17.1/img/champion/';
 
   const playerDetailsFromMatchData: any = [];
 
@@ -176,6 +176,7 @@ export default function PlayerStatus(): JSX.Element {
                   playersWithSameWinStatus[0].championName;
 
                 const summonerNameRole = playersWithSameWinStatus[0].role;
+
                 const summonerNameKills = playersWithSameWinStatus[0].kills;
                 const summonerNameDeaths = playersWithSameWinStatus[0].deaths;
                 const summonerNameAssists = playersWithSameWinStatus[0].assists;
@@ -187,7 +188,7 @@ export default function PlayerStatus(): JSX.Element {
                 const summonerNameItem1 = playersWithSameWinStatus[0].firstItem;
                 const summonerNameItem2 =
                   playersWithSameWinStatus[0].secondItem;
-                const summonerNameItem3 = playersWithSameWinStatus[0].ThreeItem;
+                const summonerNameItem3 = playersWithSameWinStatus[0].threeItem;
                 const summonerNameItem4 = playersWithSameWinStatus[0].fourItem;
                 const summonerNameItem5 = playersWithSameWinStatus[0].fiveItem;
                 const summonerNameItem6 = playersWithSameWinStatus[0].sixItem;
@@ -202,7 +203,32 @@ export default function PlayerStatus(): JSX.Element {
                       summonerQueue === 420),
                 );
 
-                console.log('qual item ', summonerNameItem3);
+                const itemData = [
+                  {
+                    value: summonerNameItem1,
+                    shouldRender: summonerNameItem1 !== 0,
+                  },
+                  {
+                    value: summonerNameItem2,
+                    shouldRender: summonerNameItem2 !== 0,
+                  },
+                  {
+                    value: summonerNameItem3,
+                    shouldRender: summonerNameItem3 !== 0,
+                  },
+                  {
+                    value: summonerNameItem4,
+                    shouldRender: summonerNameItem4 !== 0,
+                  },
+                  {
+                    value: summonerNameItem5,
+                    shouldRender: summonerNameItem5 !== 0,
+                  },
+                  {
+                    value: summonerNameItem6,
+                    shouldRender: summonerNameItem6 !== 0,
+                  },
+                ];
 
                 return (
                   <div key={groupIndex}>
@@ -280,73 +306,29 @@ export default function PlayerStatus(): JSX.Element {
                                     </div>
                                   </div>
                                   <div className="">
-                                    <Image
+                                    <span>{summonerNameRole}</span>
+                                    {/* <Image
                                       src={positionRole[summonerNameRole]}
                                       alt="ROLE"
-                                    />
+                                    /> */}
                                   </div>
 
                                   <ul className="flex gap-3">
-                                    {summonerNameItem1 !== 0 && (
-                                      <li className="min-w-[16] min-h-16">
-                                        <Image
-                                          alt="item"
-                                          width={32}
-                                          height={32}
-                                          src={`${itemIconBaseUrl}${summonerNameItem1}.png`}
-                                        />
-                                      </li>
-                                    )}
-                                    {summonerNameItem2 !== 0 && (
-                                      <li className="min-w-[16] min-h-16">
-                                        <Image
-                                          alt="item"
-                                          width={32}
-                                          height={32}
-                                          src={`${itemIconBaseUrl}${summonerNameItem2}.png`}
-                                        />
-                                      </li>
-                                    )}
-                                    {summonerNameItem3 !== 0 ||
-                                      (undefined && (
-                                        <li className="min-w-[16] min-h-16">
-                                          <Image
-                                            alt="item"
-                                            width={32}
-                                            height={32}
-                                            src={`${itemIconBaseUrl}${summonerNameItem3}.png`}
-                                          />
-                                        </li>
-                                      ))}
-                                    {summonerNameItem4 !== 0 && (
-                                      <li className="min-w-[16] min-h-16">
-                                        <Image
-                                          alt="item"
-                                          width={32}
-                                          height={32}
-                                          src={`${itemIconBaseUrl}${summonerNameItem4}.png`}
-                                        />
-                                      </li>
-                                    )}
-                                    {summonerNameItem5 !== 0 && (
-                                      <li className="min-w-[16] min-h-16">
-                                        <Image
-                                          alt="item"
-                                          width={32}
-                                          height={32}
-                                          src={`${itemIconBaseUrl}${summonerNameItem5}.png`}
-                                        />
-                                      </li>
-                                    )}
-                                    {summonerNameItem6 !== 0 && (
-                                      <li className="min-w-[16] min-h-16">
-                                        <Image
-                                          alt="item"
-                                          width={32}
-                                          height={32}
-                                          src={`${itemIconBaseUrl}${summonerNameItem6}.png`}
-                                        />
-                                      </li>
+                                    {itemData.map(
+                                      (item) =>
+                                        item.shouldRender && (
+                                          <li
+                                            key={item.value}
+                                            className="min-w-[16] min-h-16"
+                                          >
+                                            <Image
+                                              alt={`${itemIconBaseUrl}${item.value}.png`}
+                                              width={32}
+                                              height={32}
+                                              src={`${itemIconBaseUrl}${item.value}.png`}
+                                            />
+                                          </li>
+                                        ),
                                     )}
                                   </ul>
                                 </div>
@@ -358,7 +340,7 @@ export default function PlayerStatus(): JSX.Element {
                               ...playersWithOppositeWinStatus,
                             ]
                               .slice(1)
-                              .map((player, index) => {
+                              .map((player) => {
                                 const lastRankedStats =
                                   relevantRankedStats.find(
                                     (ranked) =>
@@ -372,7 +354,7 @@ export default function PlayerStatus(): JSX.Element {
                                   <AccordionContent
                                     key={player.id}
                                     className={`text-blue-700 font-semibold p-2 data-[state=closed]:hidden flex items-center ${
-                                      player.win ? 'bg-blue-200' : 'bg-red-200'
+                                      player.win ? 'bg-blue-100' : 'bg-red-100'
                                     }`}
                                   >
                                     <div className="text-blue-700 font-semibold p-2 flex items-center ">
@@ -416,13 +398,44 @@ export default function PlayerStatus(): JSX.Element {
                                             )}
                                           </span>
                                         </div>
-                                        <div className="w-32 space-x-2">
-                                          <span>{player.firstItem}</span>
-                                          <span>{player.secondItem}</span>
-                                          <span>{player.threeItem}</span>
-                                          <span>{player.fourItem}</span>
-                                          <span>{player.fiveItem}</span>
-                                          <span>{player.sixItem}</span>
+                                        <span>{player.role}</span>
+                                        <div className="w-32 space-x-2 flex items-center">
+                                          <Image
+                                            alt="item"
+                                            width={32}
+                                            height={32}
+                                            src={`${itemIconBaseUrl}${player.firstItem}.png`}
+                                          />
+                                          <Image
+                                            alt="item"
+                                            width={32}
+                                            height={32}
+                                            src={`${itemIconBaseUrl}${player.secondItem}.png`}
+                                          />
+                                          <Image
+                                            alt="item"
+                                            width={32}
+                                            height={32}
+                                            src={`${itemIconBaseUrl}${player.threeItem}.png`}
+                                          />
+                                          <Image
+                                            alt="item"
+                                            width={32}
+                                            height={32}
+                                            src={`${itemIconBaseUrl}${player.fourItem}.png`}
+                                          />
+                                          <Image
+                                            alt="item"
+                                            width={32}
+                                            height={32}
+                                            src={`${itemIconBaseUrl}${player.fiveItem}.png`}
+                                          />
+                                          <Image
+                                            alt="item"
+                                            width={32}
+                                            height={32}
+                                            src={`${itemIconBaseUrl}${player.sixItem}.png`}
+                                          />
                                         </div>
                                       </div>
                                     </div>
