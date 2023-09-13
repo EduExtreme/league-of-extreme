@@ -1,21 +1,6 @@
-import { Fragment, useState } from 'react';
-import axios from 'axios';
-
-import { v4 as uuidv4 } from 'uuid';
-
-import { americasRiotApi, riotApi } from '@/services/api';
 import { usePlayerDetails } from '@/stores/usePlayerStore';
 import { Spinner } from '../Spinner';
-import iron from '../../../public/ranked-emblem/iron.webp';
-import bronze from '../../../public/ranked-emblem/bronze.webp';
-import silver from '../../../public/ranked-emblem/silver.webp';
-import gold from '../../../public/ranked-emblem/gold.webp';
-import platinum from '../../../public/ranked-emblem/platinum.webp';
-import emerald from '../../../public/ranked-emblem/emerald.webp';
-import diamond from '../../../public/ranked-emblem/diamond.webp';
-import master from '../../../public/ranked-emblem/master.webp';
-import grandmaster from '../../../public/ranked-emblem/grandmaster.webp';
-import challenger from '../../../public/ranked-emblem/challenger.webp';
+
 import Image, { StaticImageData } from 'next/image';
 
 import top from '../../../public/icon-position-top.svg';
@@ -30,6 +15,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { RankedEloStats, tierEmblemMapping } from '../RankedEloStats';
+import TagRanked from '../TagRanked';
+import RankedFirstSpell from '../RankedFirstSpell';
+import RankedSecondSpell from '../RankedSecondSpell';
+import TagRankedFirstBlood from '../TagRankedFirstBlood';
+import TagRankedCs from '../TagRankedCs';
+import TagRankedWin from '../TagRankedWin';
 export default function PlayerStatus(): JSX.Element {
   const {
     onChangePlayerName,
@@ -40,19 +32,6 @@ export default function PlayerStatus(): JSX.Element {
     loading,
     playerMatchStats,
   } = usePlayerDetails((state) => state);
-
-  const tierEmblemMapping = {
-    IRON: iron,
-    BRONZE: bronze,
-    SILVER: silver,
-    GOLD: gold,
-    PLATINUM: platinum,
-    EMERALD: emerald,
-    DIAMOND: diamond,
-    MASTER: master,
-    GRANDMASTER: grandmaster,
-    CHALLENGER: challenger,
-  };
 
   interface Teste {
     TOP: StaticImageData;
@@ -82,61 +61,13 @@ export default function PlayerStatus(): JSX.Element {
     onChangePlayerName(event.target.value);
   };
 
-  const relevantRankedStats = rankedStats.filter(
-    (ranked) =>
-      ranked.queueType === 'RANKED_FLEX_SR' ||
-      ranked.queueType === 'RANKED_SOLO_5x5',
-  );
   return (
     <main className="flex px-12 py-8 gap-8">
       {loading === true ? (
         <Spinner />
       ) : (
         <>
-          <div className="flex gap-8">
-            {relevantRankedStats.map((ranked) => (
-              <div
-                className="border border-blue-500 border-solid p-4 h-80"
-                key={ranked.leagueId}
-              >
-                <span>
-                  {ranked.queueType === 'RANKED_FLEX_SR' ? (
-                    <strong className="text-blue-700">Ranked Flex</strong>
-                  ) : (
-                    <strong className="text-blue-700">Ranked Solo</strong>
-                  )}
-                </span>
-                <Image
-                  src={tierEmblemMapping[ranked.tier]}
-                  alt={`${ranked.tier} Emblem`}
-                />
-                <ul className="font-semibold text-gray-500">
-                  <li className="text-blue-700 font-bold">
-                    {' '}
-                    {ranked.tier} <span>{ranked.rank}</span>
-                  </li>
-                  <li> PDL - {ranked.leaguePoints}</li>
-                  <li> WINS - {ranked.wins}</li>
-                  <li> LOSSES - {ranked.losses}</li>
-                </ul>
-
-                <strong
-                  className={
-                    (ranked.wins / (ranked.wins + ranked.losses)) * 100 > 51
-                      ? 'text-green-500'
-                      : 'text-red-500'
-                  }
-                >
-                  Win Rate:{' '}
-                  {(
-                    (ranked.wins / (ranked.wins + ranked.losses)) *
-                    100
-                  ).toFixed(2)}
-                  %
-                </strong>
-              </div>
-            ))}
-          </div>
+          <RankedEloStats />
 
           <div className="flex flex-col flex-1">
             <div className="flex flex-col space-y-8">
@@ -197,6 +128,11 @@ export default function PlayerStatus(): JSX.Element {
                 const summonerNameItem6 = playersWithSameWinStatus[0].sixItem;
 
                 const summonerQueue = playersWithSameWinStatus[0].queue;
+                const relevantRankedStats = rankedStats.filter(
+                  (ranked) =>
+                    ranked.queueType === 'RANKED_FLEX_SR' ||
+                    ranked.queueType === 'RANKED_SOLO_5x5',
+                );
 
                 const rankedQueue = relevantRankedStats.find(
                   (ranked) =>
@@ -244,31 +180,25 @@ export default function PlayerStatus(): JSX.Element {
                         >
                           <AccordionItem
                             value={`item-${groupIndex}`}
-                            className={` ${
-                              summonerNameWin ? 'bg-blue-100' : 'bg-red-100'
-                            }`}
+                            className="bg-slate-900"
                           >
                             <AccordionTrigger
                               className={`flex flex-1 items-center border-l-[12px] ${
                                 summonerNameWin
-                                  ? 'border-blue-500'
+                                  ? 'border-emerald-500'
                                   : 'border-red-500'
                               }`}
                             >
                               <div className="w-full">
-                                <div className="bg-blue-600 flex justify-center">
-                                  <span className="font-semibold text-white">
-                                    {playersWithSameWinStatus[0].queue === 440
-                                      ? 'Ranked Flex'
-                                      : playersWithSameWinStatus[0].queue ===
-                                        420
-                                      ? 'Ranked Solo'
-                                      : ''}
-                                  </span>
-                                </div>
                                 <div className="flex gap-2 pl-3 pb-2 pt-2">
-                                  <div className="flex flex-col text-left">
-                                    <span className="text-blue-700 font-bold">
+                                  <div className="flex flex-col text-left w-[150px]">
+                                    <TagRanked
+                                      playersWithSameWinStatus={
+                                        playersWithSameWinStatus
+                                      }
+                                      player
+                                    />
+                                    <span className="text-emerald-500 font-bold">
                                       {summonerNameFirstPlayer}
                                     </span>
                                     <div className="flex items-center gap-1">
@@ -286,7 +216,7 @@ export default function PlayerStatus(): JSX.Element {
                                           />
                                         </span>
                                       )}
-                                      <span className="text-blue-700 font-bold">
+                                      <span className="text-emerald-100 font-bold">
                                         {rankedQueue?.rank}
                                       </span>
                                     </div>
@@ -300,8 +230,10 @@ export default function PlayerStatus(): JSX.Element {
                                           alt={`${summonerNameChampion} Icon`}
                                         />
                                       </div>
-                                      <div className="text-blue-700 font-medium">
-                                        <strong className="mr-2">KDA</strong>
+                                      <div className="text-emerald-400 font-medium flex items-center">
+                                        <strong className="mr-2 text-emerald-100">
+                                          KDA
+                                        </strong>
                                         <span>{summonerNameKills}</span>/
                                         <span className="text-red-600">
                                           {summonerNameDeaths}
@@ -310,31 +242,60 @@ export default function PlayerStatus(): JSX.Element {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="">
+                                  <div className="flex flex-col gap-2">
+                                    <TagRankedCs
+                                      playersWithSameWinStatus={
+                                        playersWithSameWinStatus
+                                      }
+                                    />
+
+                                    <RankedFirstSpell
+                                      playersWithSameWinStatus={
+                                        playersWithSameWinStatus
+                                      }
+                                    />
+                                    <RankedSecondSpell
+                                      playersWithSameWinStatus={
+                                        playersWithSameWinStatus
+                                      }
+                                    />
+                                    <TagRankedFirstBlood
+                                      playersWithSameWinStatus={
+                                        playersWithSameWinStatus
+                                      }
+                                    />
+                                  </div>
+                                  <div className="flex items-start">
                                     <Image
                                       src={positionRole[summonerNameRole]}
                                       alt="ROLE"
                                     />
                                   </div>
-
-                                  <ul className="flex gap-3">
-                                    {itemData.map(
-                                      (item) =>
-                                        item.shouldRender && (
-                                          <li
-                                            key={item.value}
-                                            className="min-w-[16] min-h-16"
-                                          >
-                                            <Image
-                                              alt={`${itemIconBaseUrl}${item.value}.png`}
-                                              width={32}
-                                              height={32}
-                                              src={`${itemIconBaseUrl}${item.value}.png`}
-                                            />
-                                          </li>
-                                        ),
-                                    )}
-                                  </ul>
+                                  <div>
+                                    <ul className="flex items-start gap-3 h-10">
+                                      {itemData.map(
+                                        (item) =>
+                                          item.shouldRender && (
+                                            <li
+                                              key={item.value}
+                                              className="min-w-[16] min-h-16"
+                                            >
+                                              <Image
+                                                alt={`${itemIconBaseUrl}${item.value}.png`}
+                                                width={32}
+                                                height={32}
+                                                src={`${itemIconBaseUrl}${item.value}.png`}
+                                              />
+                                            </li>
+                                          ),
+                                      )}
+                                    </ul>
+                                    <TagRankedWin
+                                      playersWithSameWinStatus={
+                                        playersWithSameWinStatus
+                                      }
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             </AccordionTrigger>
@@ -357,32 +318,38 @@ export default function PlayerStatus(): JSX.Element {
                                 return (
                                   <AccordionContent
                                     key={player.id}
-                                    className={`text-blue-700 font-semibold p-2 data-[state=closed]:hidden flex items-center ${
-                                      player.win ? 'bg-blue-100' : 'bg-red-100'
+                                    className={`text-blue-700 font-semibold p-2 data-[state=closed]:hidden flex items-center border border-t-slate-700 border-b-0 border-l-0 border-r-0 ${
+                                      player.win
+                                        ? 'bg-slate-900'
+                                        : 'bg-slate-800'
                                     }`}
                                   >
-                                    <div className="text-blue-700 font-semibold p-2 flex items-center ">
-                                      <div className="flex items-center justify-center gap-4">
-                                        <div className="flex flex-col">
+                                    <div className="text-emerald-100  font-semibold p-2 flex items-center">
+                                      <div className="flex items-center  gap-4 w-full">
+                                        <div className="flex flex-col w-[160px]">
                                           <span className="">
                                             {player.summonerName}
                                           </span>
-                                          <div className="flex gap-3">
+                                          <div className="flex gap-3 items-center">
                                             <Image
                                               width={32}
                                               height={32}
                                               src={`${championIconBaseUrl}${player.championName}.png`}
                                               alt={`${player.championName} Icon`}
                                             />
-                                            <span className="">
-                                              {player.kills}/{player.deaths}
+                                            <span className="text-emerald-500">
+                                              {player.kills}/
+                                              <span className="text-red-500">
+                                                {player.deaths}
+                                              </span>
+                                              /{player.assists}
                                             </span>
                                           </div>
                                         </div>
                                         <div className="text-blue-600">
                                           <span className="">
                                             {lastRankedStats && (
-                                              <p className="text-blue-600">
+                                              <p className="text-emerald-100">
                                                 <div className="flex items-center gap-2">
                                                   <Image
                                                     width={32}
@@ -406,6 +373,15 @@ export default function PlayerStatus(): JSX.Element {
                                           src={positionRole[player.role]}
                                           alt="ROLE"
                                         />
+
+                                        <span>{player.farm} CS</span>
+                                        <span>{player.firstSpell}</span>
+                                        <span>{player.secondSpell}</span>
+                                        {player.firstblood === true && (
+                                          <span className="bg-yellow-600 text-white p-1 rounded-xl">
+                                            Firstblood
+                                          </span>
+                                        )}
                                         <div className="w-32 space-x-2 flex items-center">
                                           <Image
                                             alt="item"

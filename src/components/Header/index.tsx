@@ -129,7 +129,7 @@ export function Header() {
   };
 
   return (
-    <header className="bg-blue-700 h-52">
+    <header className="bg-slate-900 h-52">
       <div className="flex flex-col gap-2 pt-5 px-12">
         <label htmlFor="role" className="text-xl font-semibold text-white">
           ExtremeGG
@@ -146,7 +146,7 @@ export function Header() {
           />
           <InputPrefix>
             <button
-              className="bg-white rounded-md p-1 text-sm font-semibold text-blue-700"
+              className="bg-emerald-700 rounded-xl p-1 text-sm font-semibold text-white"
               onClick={handleSearchClick}
             >
               .GG
